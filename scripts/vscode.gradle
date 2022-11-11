@@ -16,6 +16,8 @@ def cppWindowsUrl = "https://github.com/Microsoft/vscode-cpptools/releases/downl
 
 def cppMacUrl = "https://github.com/Microsoft/vscode-cpptools/releases/download/v${cppToolsVersion}/cpptools-osx.vsix"
 
+def cppMacArmUrl = "https://github.com/Microsoft/vscode-cpptools/releases/download/v${cppToolsVersion}/cpptools-osx-arm64.vsix"
+
 def cppLinuxUrl = "https://github.com/Microsoft/vscode-cpptools/releases/download/v${cppToolsVersion}/cpptools-linux.vsix"
 
 def wpilibExtensionUrl = "https://github.com/wpilibsuite/vscode-wpilib/releases/download/v${wpilibVersion}/vscode-wpilib-${wpilibVersion}.vsix"
@@ -112,6 +114,14 @@ def cppMacExtensionDownload = tasks.register("cppMacExtensionDownload", Download
   overwrite false
 }
 
+def cppMacArmExtensionDownload = tasks.register("cppMacArmExtensionDownload", Download) {
+  src cppMacArmUrl
+  def fileName = file(src.file).name
+  dest "$buildDir/downloads/$fileName"
+  overwrite false
+}
+
+
 def cppLinuxExtensionDownload = tasks.register("cppLinuxExtensionDownload", Download) {
   src cppLinuxUrl
   def fileName = file(src.file).name
@@ -145,8 +155,10 @@ def javaDepExtensionDownload = tasks.register("javaDepExtensionDownload", Downlo
 def cppDownloadTask
 if (project.hasProperty('linuxBuild')) {
   cppDownloadTask = cppLinuxExtensionDownload
-} else if (project.hasProperty('macBuild') || project.hasProperty('macBuildArm')) {
+} else if (project.hasProperty('macBuild')) {
   cppDownloadTask = cppMacExtensionDownload
+} else if (project.hasProperty('macBuildArm')) {
+  cppDownloadTask = cppMacArmExtensionDownload
 } else {
   cppDownloadTask = cppExtensionDownload
 }
