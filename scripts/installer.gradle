@@ -2,28 +2,54 @@ import org.gradle.internal.os.OperatingSystem
 
 
 evaluationDependsOn(':apps:MavenMetaDataFixer')
-evaluationDependsOn(':apps:ToolsUpdater')
+
+interface ExecOperationsProvider {
+   @javax.inject.Inject
+   ExecOperations getExecOperations()
+}
+def execOperations = objects.newInstance(ExecOperationsProvider).execOperations
 
 def metaDataScriptBatch = file("$rootDir/files/MavenMetaDataFixer.bat")
 def metaDataScriptSh = file("$rootDir/files/MavenMetaDataFixer.sh")
-def toolsUpdaterBatch = file("$rootDir/files/ToolsUpdater.bat")
-def toolsUpdaterSh = file("$rootDir/files/ToolsUpdater.sh")
+def toolsUpdaterOutputDir = file("$buildDir/toolsUpdater")
+
+def toolsUpdaterTask = tasks.register('toolsUpdater', Exec) {
+  outputs.dir toolsUpdaterOutputDir
+  workingDir = "$projectDir/apps/ToolsUpdater"
+
+  commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime, "/p:Version=$pubVersion", "-o", toolsUpdaterOutputDir
+
+  doLast {
+    // We can sign the app because we have a Developer ID.
+    if (project.hasProperty("developerID") && (project.hasProperty('macBuild') || project.hasProperty('macBuildArm'))) {
+        println "Received a Developer ID -- signing the tools binary..."
+        String identity = project.property("developerID")
+        execOperations.exec {
+            commandLine "sh", "-c", "automation/macos_codesign.sh ${identity} $toolsUpdaterOutputDir/ToolsUpdater"
+        }
+    }
+  }
+}
 
 ext.msBuildExtraSetup = { AbstractArchiveTask zip->
   //zip.dependsOn msbuild
   zip.inputs.file project(':apps:MavenMetaDataFixer').shadowJar.archiveFile
-  zip.inputs.file project(':apps:ToolsUpdater').shadowJar.archiveFile
   zip.inputs.file metaDataScriptBatch
   zip.inputs.file metaDataScriptSh
-  zip.inputs.file toolsUpdaterBatch
-  zip.inputs.file toolsUpdaterSh
+  zip.inputs.dir toolsUpdaterOutputDir
+  zip.dependsOn toolsUpdaterTask
 
   zip.dependsOn project(':apps:MavenMetaDataFixer').shadowJar
-  zip.dependsOn project(':apps:ToolsUpdater').shadowJar
 
   zip.from (project(':apps:MavenMetaDataFixer').shadowJar.archiveFile) {
     into '/maven'
     rename { 'MavenMetaDataFixer.jar' }
+  }
+
+  zip.from (toolsUpdaterOutputDir) {
+    into '/tools'
+    exclude '**/*.pdb'
+    filePermissions { unix(0755) }
   }
 
   if (project.ext.isUnix == true) {
@@ -34,22 +60,6 @@ ext.msBuildExtraSetup = { AbstractArchiveTask zip->
   } else {
     zip.from(metaDataScriptBatch) {
       into '/maven'
-    }
-  }
-
-  zip.from (project(':apps:ToolsUpdater').shadowJar.archiveFile) {
-    into '/tools'
-    rename { 'ToolsUpdater.jar' }
-  }
-
-  if (project.ext.isUnix == true) {
-    zip.from(toolsUpdaterSh) {
-      into '/tools'
-      filePermissions { unix(0755) }
-    }
-  } else {
-    zip.from(toolsUpdaterBatch) {
-      into '/tools'
     }
   }
 }

@@ -1,30 +1,30 @@
 ﻿#nullable disable
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace WPILibInstaller.Models
 {
     public class ArtifactConfig
     {
-        [JsonProperty("classifier")]
+        [JsonPropertyName("classifier")]
         public string Classifier { get; set; }
-        [JsonProperty("extension")]
+        [JsonPropertyName("extension")]
         public string Extension { get; set; }
-        [JsonProperty("groupId")]
+        [JsonPropertyName("groupId")]
         public string GroupId { get; set; }
-        [JsonProperty("artifactId")]
+        [JsonPropertyName("artifactId")]
         public string ArtifactId { get; set; }
-        [JsonProperty("version")]
+        [JsonPropertyName("version")]
         public string Version { get; set; }
     }
 
     public class ToolConfig
     {
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        [JsonProperty("version")]
+        [JsonPropertyName("version")]
         public string Version { get; set; }
-        [JsonProperty("artifact")]
+        [JsonPropertyName("artifact")]
         public ArtifactConfig Artifact { get; set; }
     }
 }

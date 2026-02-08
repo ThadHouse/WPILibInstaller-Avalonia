@@ -28,16 +28,17 @@ namespace WPILibInstaller.Utils
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
 
-        public bool MoveToNextEntry()
+        public Task<bool> MoveToNextEntryAsync()
         {
-            return entries.MoveNext();
+            return Task.FromResult(entries.MoveNext());
         }
 
-        public Task CopyToStreamAsync(Stream stream)
+        public Task CopyToFileAsync(string path, CancellationToken token)
         {
-            return entries.Current.Open().CopyToAsync(stream);
+            return entries.Current.ExtractToFileAsync(path, true, token);
         }
 
         public bool EntryIsExecutable => false;

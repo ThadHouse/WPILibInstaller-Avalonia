@@ -1,21 +1,22 @@
 ﻿using System;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.ComponentModel;
 using WPILibInstaller.Interfaces;
 
 namespace WPILibInstaller.ViewModels
 {
-    public class FailedPageViewModel : PageViewModelBase
+    public partial class FailedPageViewModel : PageViewModelBase
     {
         private readonly IProgramWindow progWindow;
 
-        private Exception? canceledByException = null;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ExceptionText))]
+        private Exception? _canceledByException = null;
 
-        public string ExceptionText => canceledByException?.ToString() ?? "";
+        public string ExceptionText => CanceledByException?.ToString() ?? "";
 
         public void SetException(Exception ex)
         {
-            canceledByException = ex;
-            this.RaisePropertyChanged(nameof(ExceptionText));
+            CanceledByException = ex;
         }
 
         public FailedPageViewModel(IProgramWindow progWindow)

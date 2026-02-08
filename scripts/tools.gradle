@@ -69,7 +69,7 @@ ext.toolsConfig = {
   }, { config->
     def tools = [:]
     tools['Folder'] = toolsFolder
-    tools['UpdaterJar'] = 'ToolsUpdater.jar'
+    tools['UpdaterExe'] = 'ToolsUpdater'
     config['Tools'] = tools
   })
 }

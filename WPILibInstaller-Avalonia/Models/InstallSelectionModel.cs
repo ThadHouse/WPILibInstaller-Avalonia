@@ -2,10 +2,10 @@
 {
     public class InstallSelectionModel
     {
-        public bool InstallTools { get; set; } = false;
+        public bool InstallTools { get; set; }
 
         public bool InstallEverything { get; set; } = true;
 
-        public bool InstallAsAdmin { get; set; } = false;
+        public bool InstallAsAdmin { get; set; }
     }
 }

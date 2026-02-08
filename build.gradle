@@ -315,12 +315,12 @@ def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
     }
 
     if (project.hasProperty("macBuild") || project.hasProperty("macBuildArm")) {
-        commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime, '--self-contained',
+        commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
                 "/p:Version=$pubVersion", "/t:BundleApp", "-p:RuntimeIdentifier=${macRuntimeId}",
                 "-p:CFBundleShortVersionString=$pubVersion", "-p:CFBundleVersion=$pubVersion"
     } else {
-        commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime, '/p:PublishSingleFile=true',
-                 "/p:Version=$pubVersion", '--self-contained'
+        commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
+                 "/p:Version=$pubVersion"
     }
 }
 
@@ -335,9 +335,11 @@ def versionFileTask = tasks.register('writeVersionNumber', Task) {
     }
 }
 
-def installerProj = new XmlParser().parse("$projectDir/WPILibInstaller-Avalonia/WPILibInstaller-Avalonia.csproj")
+def installerProj = new XmlParser().parse("$projectDir/Directory.Build.props")
 
 def dotnetVersion = installerProj.PropertyGroup.TargetFramework.text()
+
+println "Using .NET version: $dotnetVersion"
 
 // Copies the main application to build/outputs.
 def installDirectory = "$projectDir/WPILibInstaller-Avalonia/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
@@ -442,7 +444,7 @@ def windowsCreateImageTask = tasks.register('createWindowsImage', Exec) {
 
     outputs.file file
 
-    commandLine 'dotnet', 'run', '--input', "$buildDir/outputs", '--output', file, '--version', pubVersion
+    commandLine 'dotnet', 'run', '--input', "$buildDir/outputs", '--output', file, '--installerversion', pubVersion
 }
 
 // Creates the Linux tarball.

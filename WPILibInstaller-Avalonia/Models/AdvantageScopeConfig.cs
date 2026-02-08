@@ -1,14 +1,14 @@
 ﻿#nullable disable
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace WPILibInstaller.Models
 {
     public class AdvantageScopeConfig
     {
-        [JsonProperty("zipFile")]
+        [JsonPropertyName("zipFile")]
         public string ZipFile { get; set; }
-        [JsonProperty("folder")]
+        [JsonPropertyName("folder")]
         public string Folder { get; set; }
     }
 }

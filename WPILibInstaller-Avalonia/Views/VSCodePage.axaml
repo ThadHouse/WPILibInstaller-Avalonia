@@ -1,0 +1,45 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="400"
+             x:Class="WPILibInstaller.Views.VSCodePage"
+             xmlns:vm="using:WPILibInstaller.ViewModels"
+             x:DataType="vm:VSCodePageViewModel">
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="2*"/>
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="3*"/>
+    </Grid.RowDefinitions>
+    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled">
+    <TextBlock TextWrapping="Wrap" FontSize="13">
+    For licensing reasons, this installer must download VS Code separately. Each year gets its own install separate from the system one.
+
+We strongly recommend using WPILib's VS Code instead of the system one or a separate IDE.
+    </TextBlock>
+    </ScrollViewer>
+    <TextBlock TextWrapping="Wrap" Grid.Row="1" Height="15" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding DoneText}"></TextBlock>
+    <Grid Grid.Row="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="4*"/>
+        <ColumnDefinition Width="4*"/>
+        <ColumnDefinition Width="2*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0" Grid.Row="0" Margin="0,0,5,5" IsEnabled="{Binding EnableSelectionButtons}" Content="{Binding SingleDownloadText}" Command="{Binding DownloadSingleVsCodeCommand}"></Button>
+      <Button Grid.Column="1" Grid.Row="0" Margin="5,0,0,5" IsEnabled="{Binding EnableSelectionButtons}" Content="{Binding SkipVsCodeText}" Command="{Binding SkipVsCodeCommand}"></Button>
+      <Button Grid.Column="0" Grid.Row="1" Margin="0,0,5,0" IsEnabled="{Binding EnableSelectionButtons}" Content="{Binding AllDownloadText}" Command="{Binding DownloadVsCodeCommand}"/>
+      <Button Grid.Column="1" Grid.Row="1" Margin="5,0,0,0" IsEnabled="{Binding EnableSelectionButtons}" Content="{Binding SelectText}" Command="{Binding SelectVsCodeCommand}"/>
+      <StackPanel Margin="5,0,0,0" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">
+        <ProgressBar Value="{Binding ProgressBar1}" IsVisible="{Binding ProgressBar1Visible}" Margin="0,2,0,0" MinWidth="20" />
+        <ProgressBar Value="{Binding ProgressBar2}" IsVisible="{Binding ProgressBarAllVisible}" Margin="0,2,0,0" MinWidth="20" />
+        <ProgressBar Value="{Binding ProgressBar3}" IsVisible="{Binding ProgressBarAllVisible}" Margin="0,2,0,0" MinWidth="20" />
+        <ProgressBar Value="{Binding ProgressBar4}" IsVisible="{Binding ProgressBarAllVisible}" Margin="0,2,0,0" MinWidth="20" />
+      </StackPanel>
+    </Grid>
+  </Grid>
+</UserControl>

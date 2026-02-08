@@ -1,16 +1,16 @@
 ﻿#nullable disable
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace WPILibInstaller.Models
 {
     public class Extension
     {
-        [JsonProperty("vsix")]
+        [JsonPropertyName("vsix")]
         public string Vsix { get; set; }
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        [JsonProperty("version")]
+        [JsonPropertyName("version")]
         public string Version { get; set; }
     }
 
@@ -34,9 +34,9 @@ namespace WPILibInstaller.Models
 
         public string VsCodeVersion { get; set; }
 
-        [JsonProperty("wpilibExtension")]
+        [JsonPropertyName("wpilibExtension")]
         public Extension WPILibExtension { get; set; }
-        [JsonProperty("thirdPartyExtensions")]
+        [JsonPropertyName("thirdPartyExtensions")]
         public Extension[] ThirdPartyExtensions { get; set; }
     }
 }

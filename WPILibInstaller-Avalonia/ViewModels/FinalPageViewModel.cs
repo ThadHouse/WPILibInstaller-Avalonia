@@ -1,16 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reactive;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using ReactiveUI;
+using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 
 namespace WPILibInstaller.ViewModels
 {
-    public class FinalPageViewModel : PageViewModelBase
+    public partial class FinalPageViewModel : PageViewModelBase
     {
         private readonly IProgramWindow progWindow;
         private readonly IConfigurationProvider configurationProvider;
@@ -18,16 +14,7 @@ namespace WPILibInstaller.ViewModels
 
         public string FinishText { get; }
 
-        public ReactiveCommand<Unit, Unit> OpenKnownIssues { get; }
-
-        public ReactiveCommand<Unit, Unit> OpenChangelog { get; }
-
-        public ReactiveCommand<Unit, Unit> OpenBetaSite { get; }
-
-        public ReactiveCommand<Unit, Unit> OpenBetaDocs { get; }
-
-        public FinalPageViewModel(IProgramWindow progWindow, IConfigurationProvider configurationProvider, IVsCodeInstallLocationProvider vsCodeProvider,
-                ICatchableButtonFactory buttonFactory)
+        public FinalPageViewModel(IProgramWindow progWindow, IConfigurationProvider configurationProvider, IVsCodeInstallLocationProvider vsCodeProvider)
             : base("Finish", "")
         {
             vsCodeInstalled = vsCodeProvider.Model.InstallingVsCode;
@@ -47,34 +34,35 @@ namespace WPILibInstaller.ViewModels
                 FinishText = "";
             }
 
-            OpenKnownIssues = buttonFactory.CreateCatchableButton(OpenKnownIssuesFunc);
-            OpenChangelog = buttonFactory.CreateCatchableButton(OpenChangelogFunc);
-            OpenBetaDocs = buttonFactory.CreateCatchableButton(OpenBetaDocsFunc);
-            OpenBetaSite = buttonFactory.CreateCatchableButton(OpenBetaSiteFunc);
+            // OpenKnownIssues = buttonFactory.CreateCatchableButton(OpenKnownIssuesFunc);
+            // OpenChangelog = buttonFactory.CreateCatchableButton(OpenChangelogFunc);
+            // OpenBetaDocs = buttonFactory.CreateCatchableButton(OpenBetaDocsFunc);
+            // OpenBetaSite = buttonFactory.CreateCatchableButton(OpenBetaSiteFunc);
 
             this.progWindow = progWindow;
             this.configurationProvider = configurationProvider;
         }
 
-        public Task OpenKnownIssuesFunc()
+        [RelayCommand]
+        public static void OpenKnownIssues()
         {
             OpenBrowser("https://docs.wpilib.org/en/2027/docs/yearly-overview/known-issues.html");
-            return Task.CompletedTask;
         }
 
-        public Task OpenBetaDocsFunc()
+        [RelayCommand]
+        public static void OpenBetaDocs()
         {
             OpenBrowser("https://docs.wpilib.org/en/2027");
-            return Task.CompletedTask;
         }
 
-        public Task OpenBetaSiteFunc()
+        [RelayCommand]
+        public static void OpenBetaSite()
         {
             OpenBrowser("https://github.com/wpilibsuite/SystemcoreTesting");
-            return Task.CompletedTask;
         }
 
-        public Task OpenChangelogFunc()
+        [RelayCommand]
+        public static void OpenChangelog()
         {
             string? verString = null;
             try
@@ -94,9 +82,6 @@ namespace WPILibInstaller.ViewModels
             {
                 OpenBrowser($"https://github.com/wpilibsuite/allwpilib/releases/");
             }
-
-
-            return Task.CompletedTask;
         }
 
         public override PageViewModelBase MoveNext()

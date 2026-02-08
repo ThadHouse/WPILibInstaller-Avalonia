@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WPILibInstaller.Utils
 {
-    class HttpClientDownloadWithProgress : IDisposable
+    sealed class HttpClientDownloadWithProgress : IDisposable
     {
         private readonly string _downloadUrl;
         private readonly Stream _destinationStream;
@@ -49,7 +49,7 @@ namespace WPILibInstaller.Utils
 
             do
             {
-                var bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length);
+                var bytesRead = await contentStream.ReadAsync(buffer);
                 if (bytesRead == 0)
                 {
                     isMoreToRead = false;
@@ -57,7 +57,7 @@ namespace WPILibInstaller.Utils
                     continue;
                 }
 
-                await _destinationStream.WriteAsync(buffer, 0, bytesRead);
+                await _destinationStream.WriteAsync(buffer.AsMemory(0, bytesRead));
 
                 totalBytesRead += bytesRead;
                 readCount += 1;

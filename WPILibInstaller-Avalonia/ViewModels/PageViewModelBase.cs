@@ -1,10 +1,8 @@
-﻿using Avalonia.Controls;
-using ReactiveUI;
-using Splat;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace WPILibInstaller.ViewModels
 {
-    public abstract class PageViewModelBase : ReactiveObject
+    public abstract class PageViewModelBase : ObservableObject
     {
         public string ForwardName { get; }
 

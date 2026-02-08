@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="400"
+             x:Class="WPILibInstaller.Views.DeprecatedOsPage"
+             xmlns:vm="using:WPILibInstaller.ViewModels"
+             x:DataType="vm:DeprecatedOsPageViewModel">
+    <StackPanel HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <TextBlock Text="{Binding DeprecatedMessage1}"
+               HorizontalAlignment="Center"
+               FontWeight="Bold"
+               FontSize="25"
+               VerticalAlignment="Center"
+               TextAlignment="Center"
+               TextWrapping="Wrap"/>
+        <TextBlock Text="{Binding DeprecatedMessage2}"
+               HorizontalAlignment="Center"
+               FontSize="20"
+               VerticalAlignment="Center"/>
+        <TextBlock Text="Please upgrade to at least Windows 11 64 Bit"
+               HorizontalAlignment="Center"
+               FontSize="20"
+               VerticalAlignment="Center" />
+        <TextBlock Text="Click &quot;I Understand&quot; to continue"
+               HorizontalAlignment="Center"
+               FontSize="20"
+               VerticalAlignment="Center" />
+        <TextBlock
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Text="{Binding CurrentSystem, Mode=OneWay}" />
+         <Button Content="Cancel"
+                HorizontalAlignment="Center"
+                Margin="20,20,20,20"
+                FontSize="20"
+                Padding="20,10"
+                Command="{Binding CancelCommand}" />
+    </StackPanel>
+</UserControl>

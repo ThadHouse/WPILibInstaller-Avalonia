@@ -1,0 +1,41 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="400"
+             x:Class="WPILibInstaller.Views.StartPage"
+             xmlns:vm="using:WPILibInstaller.ViewModels"
+             x:DataType="vm:StartPageViewModel">
+  <StackPanel HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+    <Image Source="avares://WPILibInstaller/Assets/wpilib-generic-75.png"
+           Stretch="None"
+           Margin="40"/>
+    <TextBlock Text="Welcome to the WPILib Installer!"
+               HorizontalAlignment="Center"
+               FontWeight="Bold"
+               FontSize="25"
+               VerticalAlignment="Center" />
+    <TextBlock Text="{Binding VerString, StringFormat='Version: \{0\}'}"
+               HorizontalAlignment="Center"
+               FontSize="25"
+               VerticalAlignment="Center" />
+    <TextBlock Text="Ensure you've ejected any other WPILib Installer images and restart the installer"
+               IsVisible="{Binding MacOSEject}" Foreground="Red"/>
+    <TextBlock Text="The artifacts and/or resource files were not found. Please click the buttons below to select them."
+               IsVisible="{Binding MissingEitherFile}"/>
+    <TextBlock Text="Verifying Artifacts File..."
+               IsVisible="{Binding MissingHash}"
+               HorizontalAlignment="Center"
+               FontSize="20"/>
+    <Button Margin="0, 10, 0, 0" Content="Select Artifacts File (-artifacts)"
+            Height="45"
+            Command="{Binding SelectSupportFilesCommand}"
+            IsVisible="{Binding MissingSupportFiles}"/>
+    <Button Margin="0,10,0,0" Content="Select Resourcs File (-resources)"
+            Height="45"
+            Command="{Binding SelectResourceFilesCommand}"
+            IsVisible="{Binding MissingResourceFiles}"
+            />
+  </StackPanel>
+</UserControl>

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reactive;
-
-namespace WPILibInstaller.Interfaces
+﻿namespace WPILibInstaller.Interfaces
 {
     public interface IMainWindowViewModel
     {
@@ -9,6 +6,6 @@ namespace WPILibInstaller.Interfaces
 
         void HandleException(Exception e);
 
-        IObservable<Unit> ExecuteGoNext();
+        Task ExecuteGoNext();
     }
 }

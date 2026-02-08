@@ -6,7 +6,7 @@ namespace WPILibInstaller.Utils
 {
     public interface IArchiveExtractor : IDisposable
     {
-        bool MoveToNextEntry();
+        Task<bool> MoveToNextEntryAsync();
 
         long TotalUncompressSize { get; }
 
@@ -18,6 +18,6 @@ namespace WPILibInstaller.Utils
 
         bool EntryIsExecutable { get; }
 
-        Task CopyToStreamAsync(Stream stream);
+        Task CopyToFileAsync(string path, CancellationToken token);
     }
 }

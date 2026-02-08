@@ -11,9 +11,9 @@ jobs:
           - os: ubuntu-22.04
             artifact-name: Linux
             build-options: "-PlinuxBuild"
-          - os: ubuntu-22.04
-            artifact-name: LinuxArm64
-            build-options: "-PlinuxBuildArm64"
+          # - os: ubuntu-22.04
+          #   artifact-name: LinuxArm64
+          #   build-options: "-PlinuxBuildArm64"
           - os: macos-latest
             artifact-name: macOS
             build-options: "-PmacBuild"

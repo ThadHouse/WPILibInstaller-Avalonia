@@ -7,8 +7,8 @@ namespace WPILibInstaller.Utils
         public int Major { get; set; } = -1;
         public int Minor { get; set; } = -1;
         public int Patch { get; set; } = -1;
-        public string? Else { get; set; } = null;
-        public string? FullVersion { get; set; } = null;
+        public string? Else { get; set; }
+        public string? FullVersion { get; set; }
 
         public WPIVersion(string version)
         {
@@ -101,13 +101,13 @@ namespace WPILibInstaller.Utils
 
             // If both have extra data, check for pre,
             // then go alphanumeric
-            var version1Pre = version1.Else.IndexOf("pre") >= 0;
-            var version2Pre = version2.Else.IndexOf("pre") >= 0;
+            var version1Pre = version1.Else.Contains("pre");
+            var version2Pre = version2.Else.Contains("pre");
 
             if (version1Pre && version2Pre)
             {
                 // Both pre, return greatest
-                return version1.Else.CompareTo(version2.Else) > 0;
+                return version1.Else.CompareTo(version2.Else, StringComparison.Ordinal) > 0;
             }
             else if (version1Pre)
             {
@@ -122,7 +122,7 @@ namespace WPILibInstaller.Utils
             else
             {
                 // Neither has pre, return greatest.
-                return version1.Else.CompareTo(version2.Else) > 0;
+                return version1.Else.CompareTo(version2.Else, StringComparison.Ordinal) > 0;
             }
         }
 

@@ -1,12 +1,7 @@
-﻿using System;
-using System.IO;
-using System.IO.Compression;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
-using ReactiveUI;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
 using WPILibInstaller.Utils;
@@ -14,12 +9,12 @@ using static WPILibInstaller.Utils.ArchiveUtils;
 
 namespace WPILibInstaller.ViewModels
 {
-    public class VSCodePageViewModel : PageViewModelBase, IVsCodeInstallLocationProvider
+    public partial class VSCodePageViewModel : PageViewModelBase, IVsCodeInstallLocationProvider
     {
 
         public override bool ForwardVisible => forwardVisible;
 
-        private bool forwardVisible = false;
+        private bool forwardVisible;
 
         private void SetLocalForwardVisible(bool value)
         {
@@ -32,7 +27,7 @@ namespace WPILibInstaller.ViewModels
             get => enableSelectionButtons;
             set
             {
-                this.RaiseAndSetIfChanged(ref enableSelectionButtons, value);
+                this.SetProperty(ref enableSelectionButtons, value);
             }
         }
 
@@ -41,25 +36,25 @@ namespace WPILibInstaller.ViewModels
         public string SingleDownloadText
         {
             get => singleDownloadText;
-            set => this.RaiseAndSetIfChanged(ref singleDownloadText, value);
+            set => this.SetProperty(ref singleDownloadText, value);
         }
 
         public string SkipVsCodeText
         {
             get => skipVsCodeText;
-            set => this.RaiseAndSetIfChanged(ref skipVsCodeText, value);
+            set => this.SetProperty(ref skipVsCodeText, value);
         }
 
         public string AllDownloadText
         {
             get => allDownloadText;
-            set => this.RaiseAndSetIfChanged(ref allDownloadText, value);
+            set => this.SetProperty(ref allDownloadText, value);
         }
 
         public string SelectText
         {
             get => selectText;
-            set => this.RaiseAndSetIfChanged(ref selectText, value);
+            set => this.SetProperty(ref selectText, value);
         }
 
         private string singleDownloadText = "Download for this computer only\n(fastest)";
@@ -70,55 +65,55 @@ namespace WPILibInstaller.ViewModels
         public double ProgressBar1
         {
             get => progressBar1;
-            set => this.RaiseAndSetIfChanged(ref progressBar1, value);
+            set => this.SetProperty(ref progressBar1, value);
         }
 
-        private double progressBar1 = 0;
+        private double progressBar1;
 
         public bool ProgressBar1Visible
         {
             get => progressBar1Visible;
-            set => this.RaiseAndSetIfChanged(ref progressBar1Visible, value);
+            set => this.SetProperty(ref progressBar1Visible, value);
         }
 
-        private bool progressBar1Visible = false;
+        private bool progressBar1Visible;
 
         public double ProgressBar2
         {
             get => progressBar2;
-            set => this.RaiseAndSetIfChanged(ref progressBar2, value);
+            set => this.SetProperty(ref progressBar2, value);
         }
 
-        private double progressBar2 = 0;
+        private double progressBar2;
 
         public bool ProgressBarAllVisible
         {
             get => progressBarAllVisible;
-            set => this.RaiseAndSetIfChanged(ref progressBarAllVisible, value);
+            set => this.SetProperty(ref progressBarAllVisible, value);
         }
 
-        private bool progressBarAllVisible = false;
+        private bool progressBarAllVisible;
 
         public double ProgressBar3
         {
             get => progressBar3;
-            set => this.RaiseAndSetIfChanged(ref progressBar3, value);
+            set => this.SetProperty(ref progressBar3, value);
         }
 
-        private double progressBar3 = 0;
+        private double progressBar3;
 
         public double ProgressBar4
         {
             get => progressBar4;
-            set => this.RaiseAndSetIfChanged(ref progressBar4, value);
+            set => this.SetProperty(ref progressBar4, value);
         }
 
-        private double progressBar4 = 0;
+        private double progressBar4;
 
         public string DoneText
         {
             get => doneText;
-            set => this.RaiseAndSetIfChanged(ref doneText, value);
+            set => this.SetProperty(ref doneText, value);
         }
 
         private string doneText = "";
@@ -129,16 +124,9 @@ namespace WPILibInstaller.ViewModels
         private readonly IMainWindowViewModel refresher;
         private readonly IViewModelResolver viewModelResolver;
 
-        public VSCodePageViewModel(IMainWindowViewModel mainRefresher, IProgramWindow programWindow, IConfigurationProvider modelProvider, IViewModelResolver viewModelResolver,
-            ICatchableButtonFactory buttonFactory)
+        public VSCodePageViewModel(IMainWindowViewModel mainRefresher, IProgramWindow programWindow, IConfigurationProvider modelProvider, IViewModelResolver viewModelResolver)
             : base("Next", "Back")
         {
-            SkipVsCode = buttonFactory.CreateCatchableButton(SkipVsCodeFunc);
-            DownloadSingleVsCode = buttonFactory.CreateCatchableButton(DownloadSingleVSCodeFunc);
-            DownloadVsCode = buttonFactory.CreateCatchableButton(DownloadVsCodeFunc);
-            SelectVsCode = buttonFactory.CreateCatchableButton(SelectVsCodeFunc);
-
-
             this.refresher = mainRefresher;
             this.programWindow = programWindow;
             Model = modelProvider.VsCodeModel;
@@ -157,12 +145,8 @@ namespace WPILibInstaller.ViewModels
             }
         }
 
-        public ReactiveCommand<Unit, Unit> SkipVsCode { get; }
-        public ReactiveCommand<Unit, Unit> SelectVsCode { get; }
-        public ReactiveCommand<Unit, Unit> DownloadVsCode { get; }
-        public ReactiveCommand<Unit, Unit> DownloadSingleVsCode { get; }
-
-        private async Task SkipVsCodeFunc()
+        [RelayCommand]
+        public async Task SkipVsCode()
         {
             if (Model.AlreadyInstalled)
             {
@@ -180,10 +164,11 @@ namespace WPILibInstaller.ViewModels
             }
         }
 
-        private async Task SelectVsCodeFunc()
+        [RelayCommand]
+        public async Task SelectVsCode()
         {
             var currentPlatform = PlatformUtils.CurrentPlatform;
-            String extension;
+            string extension;
 
             if (currentPlatform == Platform.Linux64 || currentPlatform == Platform.LinuxArm64)
             {
@@ -255,7 +240,8 @@ namespace WPILibInstaller.ViewModels
             return res == MsBox.Avalonia.Enums.ButtonResult.Ok;
         }
 
-        private async Task DownloadVsCodeFunc()
+        [RelayCommand]
+        public async Task DownloadVsCode()
         {
             var currentPlatform = PlatformUtils.CurrentPlatform;
             ProgressBar1Visible = true;
@@ -335,7 +321,8 @@ namespace WPILibInstaller.ViewModels
             }
         }
 
-        private async Task DownloadSingleVSCodeFunc()
+        [RelayCommand]
+        public async Task DownloadSingleVsCode()
         {
             DoneText = "Downloading VS Code for current platform. Please wait.";
             Console.WriteLine("Single Download");
@@ -373,7 +360,7 @@ namespace WPILibInstaller.ViewModels
             refresher.RefreshForwardBackProperties();
         }
 
-        private async Task<(MemoryStream stream, Platform platform, byte[] hash)> DownloadToMemoryStream(Platform platform, string downloadUrl, Action<double> progressChanged)
+        private static async Task<(MemoryStream stream, Platform platform, byte[] hash)> DownloadToMemoryStream(Platform platform, string downloadUrl, Action<double> progressChanged)
         {
             MemoryStream ms = new MemoryStream(100000000);
             await DownloadForPlatform(downloadUrl, ms, progressChanged);
@@ -383,7 +370,7 @@ namespace WPILibInstaller.ViewModels
             return (ms, platform, hash);
         }
 
-        private async Task DownloadForPlatform(string downloadUrl, Stream outputStream, Action<double> progressChanged)
+        private static async Task DownloadForPlatform(string downloadUrl, Stream outputStream, Action<double> progressChanged)
         {
             using var client = new HttpClientDownloadWithProgress(downloadUrl, outputStream);
             client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) =>

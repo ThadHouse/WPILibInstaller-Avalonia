@@ -1,32 +1,31 @@
 ﻿using System;
+using System.Formats.Tar;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.Tar;
 
 namespace WPILibInstaller.Utils
 {
     public class TarArchiveExtractor : IArchiveExtractor
     {
-        private readonly TarInputStream dataStream;
+        private readonly TarReader dataStream;
         private TarEntry currentEntry = null!;
 
         public TarArchiveExtractor(Stream stream, long size)
         {
             TotalUncompressSize = size;
             var gzipStream = new GZipStream(stream, CompressionMode.Decompress);
-
-            this.dataStream = new TarInputStream(gzipStream, Encoding.ASCII);
+            dataStream = new TarReader(gzipStream, false);
         }
 
         public long TotalUncompressSize { get; }
 
         public string EntryKey => currentEntry.Name;
 
-        public int EntrySize => (int)currentEntry.Size;
+        public int EntrySize => (int)currentEntry.Length;
 
-        public bool EntryIsDirectory => currentEntry.IsDirectory;
+        public bool EntryIsDirectory => currentEntry.EntryType == TarEntryType.Directory;
 
         public void Dispose()
         {
@@ -34,9 +33,9 @@ namespace WPILibInstaller.Utils
             dataStream.Dispose();
         }
 
-        public bool MoveToNextEntry()
+        public async Task<bool> MoveToNextEntryAsync()
         {
-            var entry = dataStream.GetNextEntry();
+            var entry = await dataStream.GetNextEntryAsync();
 
             if (entry == null)
             {
@@ -47,11 +46,11 @@ namespace WPILibInstaller.Utils
             return true;
         }
 
-        public Task CopyToStreamAsync(Stream stream)
+        public async Task CopyToFileAsync(string path, CancellationToken token)
         {
-            return dataStream.CopyToAsync(stream);
+            await currentEntry.ExtractToFileAsync(path, true, token);
         }
 
-        public bool EntryIsExecutable => (currentEntry.TarHeader.Mode & 1) != 0;
+        public bool EntryIsExecutable => currentEntry.Mode.HasFlag(UnixFileMode.UserExecute);
     }
 }

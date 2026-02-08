@@ -28,7 +28,7 @@ namespace WPILibInstaller.Utils
                 stream.Seek(-4, SeekOrigin.End);
                 Span<uint> intSpan = stackalloc uint[1];
 
-                stream.Read(MemoryMarshal.AsBytes(intSpan));
+                stream.ReadExactly(MemoryMarshal.AsBytes(intSpan));
 
                 uint uncompressedSize = intSpan[0];
 

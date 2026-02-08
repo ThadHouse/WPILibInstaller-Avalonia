@@ -1,0 +1,31 @@
+﻿<Window
+  xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:utils="clr-namespace:WPILibInstaller.Utils;assembly=WPILibInstaller"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="400"
+        x:Class="WPILibInstaller.Views.MainWindow"
+        Icon="/Assets/wpilib-256.ico"
+        Title="WPILib Installer" Width="640" Height="400"
+        xmlns:vm="using:WPILibInstaller.ViewModels"
+        xmlns:views="using:WPILibInstaller.Views"
+        x:DataType="vm:MainWindowViewModel">
+
+
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <ContentControl Grid.Row="0" Content="{Binding CurrentPage}" >
+      <ContentControl.DataTemplates>
+        <views:ViewLocator />
+      </ContentControl.DataTemplates>
+    </ContentControl>
+    <Button FontSize="15" IsVisible="{Binding BackVisible, Mode=OneWay}" Content="{Binding BackName, Mode=OneWay}" Command="{Binding GoBackCommand}" Padding="10" Grid.Row="1" HorizontalAlignment="Left" Margin="15" />
+    <Button FontSize="15" IsVisible="{Binding ForwardVisible, Mode=OneWay}" Content="{Binding ForwardName, Mode=OneWay}" Command="{Binding GoNextCommand}" Padding="10" Grid.Row="1" HorizontalAlignment="Right" Margin="15" />
+  </Grid>
+
+</Window>

@@ -1,20 +1,16 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Reactive;
+﻿using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using ReactiveUI;
+using System.Text.Json;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
 using WPILibInstaller.Utils;
 
 namespace WPILibInstaller.ViewModels
 {
-    public class StartPageViewModel : PageViewModelBase, IConfigurationProvider
+    public partial class StartPageViewModel : PageViewModelBase, IConfigurationProvider
     {
 
         private readonly IProgramWindow programWindow;
@@ -22,12 +18,10 @@ namespace WPILibInstaller.ViewModels
         private readonly IMainWindowViewModel refresher;
 
         public override bool ForwardVisible => forwardVisible;
-        private bool forwardVisible = false;
+        private bool forwardVisible;
         public string VerString => verString;
 
         private readonly string verString = $"0.0.0";
-
-        private bool missingHash = false;
 
         public void Initialize()
         {
@@ -38,17 +32,20 @@ namespace WPILibInstaller.ViewModels
             bool foundResources = false;
             bool foundSupport = false;
 
+            Task? selectResources = null;
+            Task? selectSupport = null;
+
             // Enumerate all files in base dir
             foreach (var file in Directory.EnumerateFiles(baseDir))
             {
-                if (file.EndsWith($"{verString}-resources.zip"))
+                if (file.EndsWith($"{verString}-resources.zip", StringComparison.Ordinal))
                 {
-                    _ = SelectResourceFilesWithFile(file);
+                    selectResources = SelectResourceFilesWithFile(file);
                     foundResources = true;
                 }
-                else if (file.EndsWith($"{verString}-artifacts.{extension}"))
+                else if (file.EndsWith($"{verString}-artifacts.{extension}", StringComparison.Ordinal))
                 {
-                    _ = SelectSupportFilesWithFile(file);
+                    selectSupport = SelectSupportFilesWithFile(file);
                     foundSupport = true;
                 }
             }
@@ -60,14 +57,14 @@ namespace WPILibInstaller.ViewModels
                 baseDir = Path.GetFullPath("/Volumes/WPILibInstaller");
                 foreach (var file in Directory.EnumerateFiles(baseDir))
                 {
-                    if (!foundResources && file.EndsWith($"{verString}-resources.zip"))
+                    if (!foundResources && file.EndsWith($"{verString}-resources.zip", StringComparison.Ordinal))
                     {
-                        _ = SelectResourceFilesWithFile(file);
+                        selectResources = SelectResourceFilesWithFile(file);
                         foundResources = true;
                     }
-                    else if (!foundSupport && file.EndsWith($"{verString}-artifacts.{extension}"))
+                    else if (!foundSupport && file.EndsWith($"{verString}-artifacts.{extension}", StringComparison.Ordinal))
                     {
-                        _ = SelectSupportFilesWithFile(file);
+                        selectSupport = SelectSupportFilesWithFile(file);
                         foundSupport = true;
                     }
                 }
@@ -80,22 +77,40 @@ namespace WPILibInstaller.ViewModels
                 baseDir = Path.GetFullPath(Path.Join(baseDir, "..", "..", ".."));
                 foreach (var file in Directory.EnumerateFiles(baseDir))
                 {
-                    if (!foundResources && file.EndsWith($"{verString}-resources.zip"))
+                    if (!foundResources && file.EndsWith($"{verString}-resources.zip", StringComparison.Ordinal))
                     {
-                        _ = SelectResourceFilesWithFile(file);
+                        selectResources = SelectResourceFilesWithFile(file);
                         foundResources = true;
                     }
-                    else if (!foundSupport && file.EndsWith($"{verString}-artifacts.{extension}"))
+                    else if (!foundSupport && file.EndsWith($"{verString}-artifacts.{extension}", StringComparison.Ordinal))
                     {
-                        _ = SelectSupportFilesWithFile(file);
+                        selectSupport = SelectSupportFilesWithFile(file);
                         foundSupport = true;
                     }
                 }
             }
+
+            List<Task> awaitingTasks = [];
+            if (selectResources != null)
+            {
+                awaitingTasks.Add(selectResources);
+            }
+            if (selectSupport != null)
+            {
+                awaitingTasks.Add(selectSupport);
+            }
+
+            _ = Task.WhenAll(awaitingTasks).ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    Console.WriteLine("Error during initialization: " + t.Exception);
+                    viewModelResolver.ResolveMainWindow().HandleException(t.Exception);
+                }
+            });
         }
 
-        public StartPageViewModel(IMainWindowViewModel mainRefresher, IProgramWindow mainWindow, IViewModelResolver viewModelResolver,
-            ICatchableButtonFactory buttonFactory)
+        public StartPageViewModel(IMainWindowViewModel mainRefresher, IProgramWindow mainWindow, IViewModelResolver viewModelResolver)
             : base("Start", "")
         {
             try
@@ -115,9 +130,6 @@ namespace WPILibInstaller.ViewModels
                 // Do nothing if we couldn't determine the drive
             }
 
-            SelectSupportFiles = buttonFactory.CreateCatchableButton(SelectSupportFilesFunc);
-            SelectResourceFiles = buttonFactory.CreateCatchableButton(SelectResourceFilesFunc);
-
             this.programWindow = mainWindow;
             this.viewModelResolver = viewModelResolver;
             refresher = mainRefresher;
@@ -133,46 +145,20 @@ namespace WPILibInstaller.ViewModels
             }
         }
 
-        public bool MissingSupportFiles
-        {
-            get => missingSupportFiles;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref missingSupportFiles, value);
-                this.RaisePropertyChanged(nameof(MissingEitherFile));
-            }
-        }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(MissingEitherFile))]
+        private bool _missingSupportFiles = true;
 
-        public bool MissingHash
-        {
-            get => missingHash;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref missingHash, value);
-            }
-        }
+        [ObservableProperty]
+        private bool _missingHash = false;
 
         public bool MissingEitherFile => MissingSupportFiles || MissingResourceFiles;
 
         public bool MacOSEject => MissingEitherFile && RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
-        private bool missingSupportFiles = true;
-
-        public bool MissingResourceFiles
-        {
-            get => missingResourceFiles;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref missingResourceFiles, value);
-                this.RaisePropertyChanged(nameof(MissingEitherFile));
-            }
-        }
-
-        private bool missingResourceFiles = true;
-
-
-        public ReactiveCommand<Unit, Unit> SelectSupportFiles { get; }
-        public ReactiveCommand<Unit, Unit> SelectResourceFiles { get; }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(MissingEitherFile))]
+        private bool _missingResourceFiles = true;
 
         private async Task<bool> SelectResourceFilesWithFile(string file)
         {
@@ -188,10 +174,7 @@ namespace WPILibInstaller.ViewModels
             using (StreamReader reader = new StreamReader(entry!.Open()))
             {
                 var vsConfigStr = await reader.ReadToEndAsync();
-                VsCodeConfig = JsonConvert.DeserializeObject<VsCodeConfig>(vsConfigStr, new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                }) ?? throw new InvalidOperationException("Not Valid");
+                VsCodeConfig = JsonSerializer.Deserialize(vsConfigStr, SourceGenerationContext.Default.VsCodeConfig) ?? throw new InvalidOperationException("Not Valid");
             }
 
             entry = zipArchive.GetEntry("jdkConfig.json");
@@ -199,10 +182,7 @@ namespace WPILibInstaller.ViewModels
             using (StreamReader reader = new StreamReader(entry!.Open()))
             {
                 var configStr = await reader.ReadToEndAsync();
-                JdkConfig = JsonConvert.DeserializeObject<JdkConfig>(configStr, new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                }) ?? throw new InvalidOperationException("Not Valid");
+                JdkConfig = JsonSerializer.Deserialize(configStr, SourceGenerationContext.Default.JdkConfig) ?? throw new InvalidOperationException("Not Valid");
             }
 
             entry = zipArchive.GetEntry("advantageScopeConfig.json");
@@ -210,10 +190,7 @@ namespace WPILibInstaller.ViewModels
             using (StreamReader reader = new StreamReader(entry!.Open()))
             {
                 var configStr = await reader.ReadToEndAsync();
-                AdvantageScopeConfig = JsonConvert.DeserializeObject<AdvantageScopeConfig>(configStr, new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                }) ?? throw new InvalidOperationException("Not Valid");
+                AdvantageScopeConfig = JsonSerializer.Deserialize(configStr, SourceGenerationContext.Default.AdvantageScopeConfig) ?? throw new InvalidOperationException("Not Valid");
             }
 
             entry = zipArchive.GetEntry("elasticConfig.json");
@@ -221,10 +198,7 @@ namespace WPILibInstaller.ViewModels
             using (StreamReader reader = new StreamReader(entry!.Open()))
             {
                 var configStr = await reader.ReadToEndAsync();
-                ElasticConfig = JsonConvert.DeserializeObject<ElasticConfig>(configStr, new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                }) ?? throw new InvalidOperationException("Not Valid");
+                ElasticConfig = JsonSerializer.Deserialize(configStr, SourceGenerationContext.Default.ElasticConfig) ?? throw new InvalidOperationException("Not Valid");
             }
 
             entry = zipArchive.GetEntry("fullConfig.json");
@@ -232,10 +206,7 @@ namespace WPILibInstaller.ViewModels
             using (StreamReader reader = new StreamReader(entry!.Open()))
             {
                 var configStr = await reader.ReadToEndAsync();
-                FullConfig = JsonConvert.DeserializeObject<FullConfig>(configStr, new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                }) ?? throw new InvalidOperationException("Not Valid");
+                FullConfig = JsonSerializer.Deserialize(configStr, SourceGenerationContext.Default.FullConfig) ?? throw new InvalidOperationException("Not Valid");
             }
 
             entry = zipArchive.GetEntry("upgradeConfig.json");
@@ -243,10 +214,7 @@ namespace WPILibInstaller.ViewModels
             using (StreamReader reader = new StreamReader(entry!.Open()))
             {
                 var configStr = await reader.ReadToEndAsync();
-                UpgradeConfig = JsonConvert.DeserializeObject<UpgradeConfig>(configStr, new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                }) ?? throw new InvalidOperationException("Not Valid");
+                UpgradeConfig = JsonSerializer.Deserialize(configStr, SourceGenerationContext.Default.UpgradeConfig) ?? throw new InvalidOperationException("Not Valid");
             }
 
             string? neededInstaller = CheckInstallerType();
@@ -317,7 +285,8 @@ namespace WPILibInstaller.ViewModels
             return null;
         }
 
-        public async Task SelectResourceFilesFunc()
+        [RelayCommand]
+        public async Task SelectResourceFiles()
         {
             var file = await programWindow.ShowFilePicker("Select Resource File", "zip", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
 
@@ -348,9 +317,9 @@ namespace WPILibInstaller.ViewModels
                 }
 
                 // Make sure they match.
-                if (!s.Equals(hash.ToUpper()))
+                if (!s.Equals(hash, StringComparison.OrdinalIgnoreCase))
                 {
-                    viewModelResolver.ResolveMainWindow().HandleException(new Exception("The artifacts file was damaged.\nThis is either caused by a bad download,\nor on macOS you originally download the wrong dmg\nand its still mounted. Make sure to eject\nall dmg's and try again (And maybe reboot)."));
+                    viewModelResolver.ResolveMainWindow().HandleException(new InvalidDataException("The artifacts file was damaged.\nThis is either caused by a bad download,\nor on macOS you originally download the wrong dmg\nand its still mounted. Make sure to eject\nall dmg's and try again (And maybe reboot)."));
                     return false;
                 }
                 MissingHash = false;
@@ -366,7 +335,8 @@ namespace WPILibInstaller.ViewModels
             return true;
         }
 
-        public async Task SelectSupportFilesFunc()
+        [RelayCommand]
+        public async Task SelectSupportFiles()
         {
             var file = await programWindow.ShowFilePicker("Select Artifact File", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "zip" : "gz", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
 

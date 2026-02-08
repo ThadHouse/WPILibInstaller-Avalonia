@@ -12,7 +12,7 @@ namespace WPILibInstaller.Models
     public class ToolsConfig
     {
         public string Folder { get; set; }
-        public string UpdaterJar { get; set; }
+        public string UpdaterExe { get; set; }
     }
 
     public class UpgradeConfig

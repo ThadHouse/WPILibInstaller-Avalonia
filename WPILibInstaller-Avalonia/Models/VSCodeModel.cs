@@ -42,6 +42,7 @@ namespace WPILibInstaller.Models
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             ToExtractArchive?.Dispose();
             ToExtractArchiveMacOs?.Dispose();
         }
