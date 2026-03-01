@@ -52,7 +52,7 @@ Icon={configurationProvider.InstallDirectory}/icons/{iconName}
 Terminal=false
 StartupNotify=true
 StartupWMClass={wmClass}
-";
+".ReplaceLineEndings("\n");
             var launcherPath = Path.GetDirectoryName(launcherFile);
             if (launcherPath != null)
             {
@@ -1066,7 +1066,7 @@ Icon={configurationProvider.InstallDirectory}/icons/wpilib-icon-256.png
 Terminal=false
 StartupNotify=true
 StartupWMClass=Code
-";
+".ReplaceLineEndings("\n");
 
                     var desktopPath = Path.GetDirectoryName(desktopFile);
                     if (desktopPath != null)
