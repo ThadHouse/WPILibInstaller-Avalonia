@@ -1,4 +1,4 @@
-namespace WPILibInstaller.ViewModels;
+﻿namespace WPILibInstaller.ViewModels;
 
 public enum MessageDialogButtons
 {
