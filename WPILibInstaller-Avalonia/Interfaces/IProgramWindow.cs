@@ -1,4 +1,4 @@
-using WPILibInstaller.ViewModels;
+﻿using WPILibInstaller.ViewModels;
 
 namespace WPILibInstaller.Interfaces
 {
