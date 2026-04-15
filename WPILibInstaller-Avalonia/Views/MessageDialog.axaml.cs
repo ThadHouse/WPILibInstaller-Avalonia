@@ -2,24 +2,10 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using WPILibInstaller.ViewModels;
 
 namespace WPILibInstaller.Views
 {
-    public enum MessageDialogButtons
-    {
-        Ok,
-        YesNo,
-        OkAbort
-    }
-
-    public enum MessageDialogResult
-    {
-        Ok,
-        Yes,
-        No,
-        Abort
-    }
-
     public partial class MessageDialog : Window
     {
         public string Message { get; }

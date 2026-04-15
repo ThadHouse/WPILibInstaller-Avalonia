@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
 using WPILibInstaller.Utils;
-using WPILibInstaller.Views;
 using static WPILibInstaller.Utils.ArchiveUtils;
 
 namespace WPILibInstaller.ViewModels
@@ -154,7 +153,7 @@ namespace WPILibInstaller.ViewModels
                 return;
             }
 
-            var result = await MessageDialog.ShowDialog(programWindow.Window, "Confirmation",
+            var result = await programWindow.ShowMessageDialog("Confirmation",
                 "Are you sure you want to skip installing VS Code?\nA WPILib VS Code install was not detected.",
                 MessageDialogButtons.YesNo);
 
@@ -216,7 +215,7 @@ namespace WPILibInstaller.ViewModels
             }
             catch
             {
-                await MessageDialog.ShowDialog(programWindow.Window, "Error",
+                await programWindow.ShowMessageDialog("Error",
                     "You must select a VS Code zip downloaded with this tool.");
                 return;
             }
@@ -229,7 +228,7 @@ namespace WPILibInstaller.ViewModels
         private async Task<bool> CheckIncorrectHash(string name, string expected, string actual)
         {
             string msg = $"Invalid Hash for {name}\nExpected: {expected}\nActual: {actual}\nOK to ignore, Abort to cancel.\nIf cancelled, problems may occur";
-            var res = await MessageDialog.ShowDialog(programWindow.Window, "Invalid Hash", msg, MessageDialogButtons.OkAbort);
+            var res = await programWindow.ShowMessageDialog("Invalid Hash", msg, MessageDialogButtons.OkAbort);
             return res == MessageDialogResult.Ok;
         }
 

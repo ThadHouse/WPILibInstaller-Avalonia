@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
 using WPILibInstaller.Utils;
-using WPILibInstaller.Views;
 using File = System.IO.File;
 
 namespace WPILibInstaller.ViewModels
@@ -569,7 +568,7 @@ StartupWMClass={wmClass}
                 if (foundRunningExe)
                 {
                     string msg = "Running JDK processes have been found. Installation cannot continue. Please restart your computer, and rerun this installer without running anything else (including VS Code)";
-                    await MessageDialog.ShowDialog(programWindow.Window, "JDKs Running", msg);
+                    await programWindow.ShowMessageDialog("JDKs Running", msg);
                     throw new InvalidOperationException(msg);
                 }
             }
@@ -958,8 +957,7 @@ StartupWMClass={wmClass}
 
                     if (exitCode == 1223) // ERROR_CANCELLED
                     {
-                        var results = await MessageDialog.ShowDialog(programWindow.Window,
-                            "UAC Prompt Cancelled",
+                        var results = await programWindow.ShowMessageDialog("UAC Prompt Cancelled",
                             "UAC Prompt Cancelled or Timed Out. Would you like to retry?",
                             MessageDialogButtons.YesNo);
                         if (results == MessageDialogResult.Yes)
@@ -971,8 +969,7 @@ StartupWMClass={wmClass}
 
                     if (exitCode != 0)
                     {
-                        await MessageDialog.ShowDialog(programWindow.Window,
-                            "Shortcut Creation Failed",
+                        await programWindow.ShowMessageDialog("Shortcut Creation Failed",
                             $"Shortcut creation failed with error code {exitCode}");
                         break;
                     }
