@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace WPILibInstaller.Models
+﻿namespace WPILibInstaller.Models
 {
     public class ShortcutData
     {

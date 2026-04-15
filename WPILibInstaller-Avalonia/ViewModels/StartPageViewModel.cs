@@ -147,10 +147,10 @@ namespace WPILibInstaller.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(MissingEitherFile))]
-        private bool _missingSupportFiles = true;
+        public partial bool MissingSupportFiles { get; set; } = true;
 
         [ObservableProperty]
-        private bool _missingHash = false;
+        public partial bool MissingHash { get; set; } = false;
 
         public bool MissingEitherFile => MissingSupportFiles || MissingResourceFiles;
 
@@ -158,7 +158,7 @@ namespace WPILibInstaller.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(MissingEitherFile))]
-        private bool _missingResourceFiles = true;
+        public partial bool MissingResourceFiles { get; set; } = true;
 
         private async Task<bool> SelectResourceFilesWithFile(string file)
         {

@@ -1,5 +1,4 @@
 ﻿using System.Security.Cryptography;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using MsBox.Avalonia;
 using WPILibInstaller.Interfaces;

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace WPILibInstaller.Utils
+﻿namespace WPILibInstaller.Utils
 {
     public class WPIVersion
     {
