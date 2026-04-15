@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
@@ -23,6 +24,7 @@ namespace WPILibInstaller.Views
     {
         public string Message { get; }
 
+        // Parameterless constructor required by Avalonia XAML loader
         public MessageDialog()
         {
             Message = "";
@@ -45,7 +47,8 @@ namespace WPILibInstaller.Views
 
         private void AddButtons(MessageDialogButtons buttons)
         {
-            var panel = this.FindControl<StackPanel>("ButtonPanel")!;
+            var panel = this.FindControl<StackPanel>("ButtonPanel")
+                ?? throw new InvalidOperationException("ButtonPanel not found in MessageDialog XAML");
 
             switch (buttons)
             {
