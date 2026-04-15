@@ -1,0 +1,24 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+        x:Class="WPILibInstaller.Views.MessageDialog"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        MinWidth="300"
+        MaxWidth="600">
+  <Grid Margin="20" RowDefinitions="*,Auto">
+    <TextBlock Grid.Row="0"
+               Text="{Binding Message}"
+               TextWrapping="Wrap"
+               VerticalAlignment="Center"
+               Margin="0,0,0,20" />
+    <StackPanel Grid.Row="1"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="10"
+                x:Name="ButtonPanel" />
+  </Grid>
+</Window>
