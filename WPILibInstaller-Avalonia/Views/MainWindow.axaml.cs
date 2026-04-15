@@ -109,5 +109,10 @@ namespace WPILibInstaller.Views
         {
             return viewModel!;
         }
+
+        public Task<MessageDialogResult> ShowMessageDialog(string title, string message, MessageDialogButtons buttons)
+        {
+            return MessageDialog.ShowDialog(this, title, message, buttons);
+        }
     }
 }

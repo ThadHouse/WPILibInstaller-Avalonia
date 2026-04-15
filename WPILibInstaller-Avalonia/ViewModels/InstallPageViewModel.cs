@@ -570,13 +570,7 @@ StartupWMClass={wmClass}
                 if (foundRunningExe)
                 {
                     string msg = "Running JDK processes have been found. Installation cannot continue. Please restart your computer, and rerun this installer without running anything else (including VS Code)";
-                    await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard(new MsBox.Avalonia.Dto.MessageBoxStandardParams
-                    {
-                        ContentTitle = "JDKs Running",
-                        ContentMessage = msg,
-                        Icon = MsBox.Avalonia.Enums.Icon.Error,
-                        ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.Ok
-                    }).ShowWindowDialogAsync(programWindow.Window);
+                    await programWindow.ShowMessageDialog("JDKs Running", msg);
                     throw new InvalidOperationException(msg);
                 }
             }
@@ -965,14 +959,10 @@ StartupWMClass={wmClass}
 
                     if (exitCode == 1223) // ERROR_CANCELLED
                     {
-                        var results = await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard(new MsBox.Avalonia.Dto.MessageBoxStandardParams
-                        {
-                            ContentTitle = "UAC Prompt Cancelled",
-                            ContentMessage = "UAC Prompt Cancelled or Timed Out. Would you like to retry?",
-                            Icon = MsBox.Avalonia.Enums.Icon.Info,
-                            ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.YesNo
-                        }).ShowWindowDialogAsync(programWindow.Window);
-                        if (results == MsBox.Avalonia.Enums.ButtonResult.Yes)
+                        var results = await programWindow.ShowMessageDialog("UAC Prompt Cancelled",
+                            "UAC Prompt Cancelled or Timed Out. Would you like to retry?",
+                            MessageDialogButtons.YesNo);
+                        if (results == MessageDialogResult.Yes)
                         {
                             continue;
                         }
@@ -981,13 +971,8 @@ StartupWMClass={wmClass}
 
                     if (exitCode != 0)
                     {
-                        await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard(new MsBox.Avalonia.Dto.MessageBoxStandardParams
-                        {
-                            ContentTitle = "Shortcut Creation Failed",
-                            ContentMessage = $"Shortcut creation failed with error code {exitCode}",
-                            Icon = MsBox.Avalonia.Enums.Icon.Warning,
-                            ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.Ok
-                        }).ShowWindowDialogAsync(programWindow.Window);
+                        await programWindow.ShowMessageDialog("Shortcut Creation Failed",
+                            $"Shortcut creation failed with error code {exitCode}");
                         break;
                     }
                     break;

@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using WPILibInstaller.ViewModels;
 
 namespace WPILibInstaller.Interfaces
 {
@@ -6,8 +6,7 @@ namespace WPILibInstaller.Interfaces
     {
         Task<string?> ShowFilePicker(string title, string extensionFilter, string? defaultPath = null);
         Task<string?> ShowFolderPicker(string title, string? initialiDirectory = null);
+        Task<MessageDialogResult> ShowMessageDialog(string title, string message, MessageDialogButtons buttons = MessageDialogButtons.Ok);
         void CloseProgram();
-
-        Window Window { get; }
     }
 }
