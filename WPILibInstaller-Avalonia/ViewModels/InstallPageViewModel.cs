@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
 using WPILibInstaller.Utils;
+using WPILibInstaller.Views;
 using File = System.IO.File;
 
 namespace WPILibInstaller.ViewModels

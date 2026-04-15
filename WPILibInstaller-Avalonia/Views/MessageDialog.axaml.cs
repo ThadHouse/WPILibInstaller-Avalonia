@@ -20,7 +20,7 @@ namespace WPILibInstaller.Views
         Abort
     }
 
-    public class MessageDialog : Window
+    public partial class MessageDialog : Window
     {
         public string Message { get; }
 
