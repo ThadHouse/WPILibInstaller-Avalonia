@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using WPILibInstaller.Utils;
+﻿using WPILibInstaller.Utils;
 
 namespace WPILibInstaller.Models
 {

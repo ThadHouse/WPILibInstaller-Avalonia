@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace WPILibInstaller.Utils
+﻿namespace WPILibInstaller.Utils
 {
     public interface IArchiveExtractor : IDisposable
     {

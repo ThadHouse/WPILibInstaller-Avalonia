@@ -1,9 +1,5 @@
-﻿using System;
-using System.Formats.Tar;
-using System.IO;
+﻿using System.Formats.Tar;
 using System.IO.Compression;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WPILibInstaller.Utils
 {

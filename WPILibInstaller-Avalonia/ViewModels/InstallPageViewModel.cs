@@ -23,14 +23,16 @@ namespace WPILibInstaller.ViewModels
         private readonly IProgramWindow programWindow;
 
         [ObservableProperty]
-        private int _progress;
+        public partial int Progress { get; set; }
 
         [ObservableProperty]
-        private string _text = "";
+        public partial string Text { get; set; } = "";
+
         [ObservableProperty]
-        private int _progressTotal;
+        public partial int ProgressTotal { get; set; }
+
         [ObservableProperty]
-        private string _textTotal = "";
+        public partial string TextTotal { get; set; } = "";
 
         private async void CreateLinuxShortcut(string name, string frcYear, string wmClass, string iconName, CancellationToken token)
         {

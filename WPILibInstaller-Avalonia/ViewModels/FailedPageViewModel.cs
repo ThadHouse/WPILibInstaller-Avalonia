@@ -1,5 +1,4 @@
-﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using WPILibInstaller.Interfaces;
 
 namespace WPILibInstaller.ViewModels
@@ -10,7 +9,7 @@ namespace WPILibInstaller.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ExceptionText))]
-        private Exception? _canceledByException = null;
+        public partial Exception? CanceledByException { get; set; } = null;
 
         public string ExceptionText => CanceledByException?.ToString() ?? "";
 

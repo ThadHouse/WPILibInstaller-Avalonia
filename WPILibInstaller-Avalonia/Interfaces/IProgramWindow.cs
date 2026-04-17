@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using Avalonia.Controls;
-using WPILibInstaller.ViewModels;
+﻿using WPILibInstaller.ViewModels;
 
 namespace WPILibInstaller.Interfaces
 {

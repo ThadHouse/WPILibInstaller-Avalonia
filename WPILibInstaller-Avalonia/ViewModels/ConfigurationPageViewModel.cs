@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
