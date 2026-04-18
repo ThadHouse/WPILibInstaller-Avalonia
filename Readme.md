@@ -6,7 +6,7 @@ Welcome to the WPILibInstaller repository, which hosts the source code used to i
 
 ### Required Dependencies
 
-- DotNetCore 8.0 or higher.
+- DotNetCore 10.0 or higher.
 - Java 17
 
 ### Building

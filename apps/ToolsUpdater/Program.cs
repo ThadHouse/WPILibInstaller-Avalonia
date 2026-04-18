@@ -88,7 +88,7 @@ async Task InstallJavaTool(ToolConfig tool, string toolsPath)
 async Task InstallCppTool(ToolConfig tool, string toolsPath)
 {
     ArtifactConfig artifact = tool.Artifact!;
-    var artifactFileName = $"{artifact.ArtifactId}-{tool.Version}_{artifact.Classifier}.{artifact.Extension}";
+    var artifactFileName = $"{artifact.ArtifactId}-{tool.Version}-{artifact.Classifier}.{artifact.Extension}";
 
     var artifactPath = Path.Combine(toolsPath, "artifacts", artifactFileName);
     Console.WriteLine("Extracting from " + artifactPath);
