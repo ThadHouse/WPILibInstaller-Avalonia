@@ -1,9 +1,4 @@
-﻿using System;
-using System.Reactive;
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using ReactiveUI;
-using WPILibInstaller.Interfaces;
+﻿using WPILibInstaller.Interfaces;
 
 namespace WPILibInstaller.ViewModels
 {
@@ -39,7 +34,6 @@ namespace WPILibInstaller.ViewModels
                 DeprecatedMessage2 = "";
             }
 
-            CancelCommand = ReactiveCommand.Create(ExitApplication);
         }
 
         public string CurrentSystem { get; }
@@ -47,19 +41,10 @@ namespace WPILibInstaller.ViewModels
         public string DeprecatedMessage1 { get; }
         public string DeprecatedMessage2 { get; }
 
-        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-
         public override PageViewModelBase MoveNext()
         {
             return viewModelResolver.Resolve<ConfigurationPageViewModel>();
         }
 
-        private void ExitApplication()
-        {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.Shutdown();
-            }
-        }
     }
 }

@@ -31,11 +31,5 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
                Text="{Binding CurrentSystem, Mode=OneWay}" />
-         <Button Content="Cancel"
-                HorizontalAlignment="Center"
-                Margin="20,20,20,20"
-                FontSize="20"
-                Padding="20,10"
-                Command="{Binding CancelCommand}" />
     </StackPanel>
 </UserControl>

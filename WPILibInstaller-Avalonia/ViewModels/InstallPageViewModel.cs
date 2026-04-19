@@ -34,7 +34,7 @@ namespace WPILibInstaller.ViewModels
         [ObservableProperty]
         public partial string TextTotal { get; set; } = "";
 
-        private async void CreateLinuxShortcut(string name, string frcYear, string wmClass, string iconName, CancellationToken token)
+        private async void CreateLinuxShortcut(string name, string executableName, String frcYear, string wmClass, string iconName, CancellationToken token)
         {
             var launcherFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share/applications", $@"{name.Replace(' ', '_').Replace(")", "").Replace("(", "")}_{frcYear}.desktop");
             string contents = $@"#!/usr/bin/env xdg-open
@@ -284,37 +284,40 @@ StartupWMClass={wmClass}
             }
         }
 
-        private static void SetIfNotSetIgnoreSync(string key, object value, JObject settingsJson)
+        private static void SetIfNotSetIgnoreSync(string key, object value, JsonObject settingsJson)
         {
             SetIfNotSet(key, value, settingsJson);
             IgnoreSync(key, settingsJson);
         }
 
-        private static void IgnoreSync(string key, JObject settingsJson)
+        private static void IgnoreSync(String key, JsonObject settingsJson)
         {
             if (settingsJson.ContainsKey("settingsSync.ignoredSettings"))
             {
-                JArray ignoredSettings = (JArray)settingsJson["settingsSync.ignoredSettings"]!;
-                Boolean keyFound = false;
-                foreach (JToken result in ignoredSettings)
+                JsonArray? ignoredSettings = settingsJson["settingsSync.ignoredSettings"]?.AsArray(); ;
+                bool keyFound = false;
+                if (ignoredSettings != null)
                 {
-                    if (result.Value<string>() != null)
+                    foreach (JsonNode? result in ignoredSettings)
                     {
-                        if (result.Value<string>() == key)
+                        if (result != null)
                         {
-                            keyFound = true;
+                            if (result.ToString().Equals(key, StringComparison.Ordinal))
+                            {
+                                keyFound = true;
+                            }
                         }
                     }
-                }
-                if (!keyFound)
-                {
-                    ignoredSettings.Add(key);
-                    settingsJson["settingsSync.ignoredSettings"] = ignoredSettings;
+                    if (!keyFound)
+                    {
+                        ignoredSettings.Add((JsonNode)key);
+                        settingsJson["settingsSync.ignoredSettings"] = ignoredSettings;
+                    }
                 }
             }
             else
             {
-                JArray ignoredSettings = [key];
+                JsonArray? ignoredSettings = new JsonArray(key);
                 settingsJson["settingsSync.ignoredSettings"] = ignoredSettings;
             }
         }
@@ -426,74 +429,71 @@ StartupWMClass={wmClass}
                     {
                         if (result == null) continue;
                         JsonNode? name = result["name"];
-                    if (name != null)
-                    {
+                        if (name != null)
+                        {
                             if (name.ToString().Equals("JavaSE-17", StringComparison.OrdinalIgnoreCase))
-                        {
-                            result["path"] = Path.Combine(homePath, "jdk");
-                            result["default"] = true;
-                            javaFound = true;
-                        }
-                        else
-                        {
-                            result["default"] = false;
+                            {
+                                result["path"] = Path.Combine(homePath, "jdk");
+                                result["default"] = true;
+                                javaFound = true;
+                            }
+                            else
+                            {
+                                result["default"] = false;
+                            }
                         }
                     }
-                }
-                if (!javaFound)
-                {
+                    if (!javaFound)
+                    {
                         JsonObject javaConfigProp = new JsonObject
+                        {
+                            ["name"] = "JavaSE-17",
+                            ["path"] = Path.Combine(homePath, "jdk"),
+                            ["default"] = true
+                        };
+                        javaConfigEnv.Add((JsonNode)javaConfigProp);
+                        settingsJson["java.configuration.runtimes"] = javaConfigEnv;
+                    }
+                }
+                else
+                {
+                    JsonArray javaConfigProps = new JsonArray();
+                    JsonObject javaConfigProp = new JsonObject
                     {
                         ["name"] = "JavaSE-17",
                         ["path"] = Path.Combine(homePath, "jdk"),
                         ["default"] = true
                     };
-                        javaConfigEnv.Add((JsonNode)javaConfigProp);
-                    settingsJson["java.configuration.runtimes"] = javaConfigEnv;
+                    javaConfigProps.Add((JsonNode)javaConfigProp);
+                    settingsJson["java.configuration.runtimes"] = javaConfigProps;
                 }
-            }
-            }
-            else
-            {
-                JsonArray javaConfigProps = new JsonArray();
-                JsonObject javaConfigProp = new JsonObject
-                {
-                    ["name"] = "JavaSE-17",
-                    ["path"] = Path.Combine(homePath, "jdk"),
-                    ["default"] = true
-                };
-                javaConfigProps.Add((JsonNode)javaConfigProp);
-                settingsJson["java.configuration.runtimes"] = javaConfigProps;
-            }
 
-            if (settingsJson.ContainsKey("settingsSync.ignoredExtensions"))
-            {
-                JArray ignoredExtensions = (JArray)settingsJson["settingsSync.ignoredExtensions"]!;
-                Boolean keyFound = false;
-                foreach (JToken result in ignoredExtensions)
+                if (settingsJson.ContainsKey("settingsSync.ignoredExtensions"))
                 {
-                    if (result.Value<string>() != null)
+                    JsonArray ignoredExtensions = settingsJson["settingsSync.ignoredExtensions"]?.AsArray() ?? new JsonArray();
+                    Boolean keyFound = false;
+                    foreach (JsonNode? result in ignoredExtensions)
                     {
-                        if (result.Value<string>() == "wpilibsuite.vscode-wpilib")
+                        if (result != null && result.ToString() == "wpilibsuite.vscode-wpilib")
                         {
                             keyFound = true;
                         }
                     }
+                    if (!keyFound)
+                    {
+                        ignoredExtensions.Add((JsonNode)"wpilibsuite.vscode-wpilib");
+                        settingsJson["settingsSync.ignoredExtensions"] = ignoredExtensions;
+                    }
                 }
-                if (!keyFound)
+                else
                 {
-                    ignoredExtensions.Add("wpilibsuite.vscode-wpilib");
+                    JsonArray ignoredExtensions = new JsonArray("wpilibsuite.vscode-wpilib");
                     settingsJson["settingsSync.ignoredExtensions"] = ignoredExtensions;
                 }
-            }
-            else
-            {
-                JArray ignoredExtensions = ["wpilibsuite.vscode-wpilib"];
-                settingsJson["settingsSync.ignoredExtensions"] = ignoredExtensions;
-            }
 
-            var serialized = settingsJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(settingsFile, serialized);
+                var serialized = settingsJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(settingsFile, serialized);
+            }
         }
 
         private async Task RunVsCodeSetup(CancellationToken token)
