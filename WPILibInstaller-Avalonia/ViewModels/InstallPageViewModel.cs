@@ -49,7 +49,7 @@ Icon={configurationProvider.InstallDirectory}/icons/{iconName}
 Terminal=false
 StartupNotify=true
 StartupWMClass={wmClass}
-";
+".ReplaceLineEndings("\n");
             var launcherPath = Path.GetDirectoryName(launcherFile);
             if (launcherPath != null)
             {
@@ -272,11 +272,11 @@ StartupWMClass={wmClass}
                 if (value is string strValue)
                 {
                     settingsJson[key] = strValue;
-            }
+                }
                 else if (value is bool boolValue)
                 {
                     settingsJson[key] = boolValue;
-        }
+                }
                 else
                 {
                     throw new ArgumentException($"Unsupported value type for JSON: {value.GetType()}", nameof(value));
@@ -490,10 +490,9 @@ StartupWMClass={wmClass}
                     JsonArray ignoredExtensions = new JsonArray("wpilibsuite.vscode-wpilib");
                     settingsJson["settingsSync.ignoredExtensions"] = ignoredExtensions;
                 }
-
-                var serialized = settingsJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
-                await File.WriteAllTextAsync(settingsFile, serialized);
             }
+            var serialized = settingsJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(settingsFile, serialized);
         }
 
         private async Task RunVsCodeSetup(CancellationToken token)
@@ -1049,7 +1048,7 @@ Icon={configurationProvider.InstallDirectory}/icons/wpilib-icon-256.png
 Terminal=false
 StartupNotify=true
 StartupWMClass=Code
-";
+".ReplaceLineEndings("\n");
 
                     var desktopPath = Path.GetDirectoryName(desktopFile);
                     if (desktopPath != null)

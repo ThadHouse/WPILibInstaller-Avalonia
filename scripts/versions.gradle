@@ -10,10 +10,6 @@ ext.javaExtVersion = '1.38.0'
 ext.javaExtPatchVersion = '403'
 ext.javaDebugVersion = '0.58.2'
 ext.javaDependencyVersion = '0.24.1'
-ext.pythonExtVersion = '2024.22.1'
-ext.pylanceVersion = '2024.12.1'
-ext.isortVersion = '2023.10.1'
-ext.blackVersion = '2025.2.0'
 
 ext.wpilibVersion = gradleRioVersion
 
