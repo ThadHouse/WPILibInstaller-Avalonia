@@ -49,23 +49,6 @@ static string GetPlatformPath()
     return DesktopOS() + "/" + DesktopArch();
 }
 
-static void CopyDirectory(string sourceDir, string destDir)
-{
-    Directory.CreateDirectory(destDir);
-
-    foreach (var file in Directory.GetFiles(sourceDir))
-    {
-        var destFile = Path.Combine(destDir, Path.GetFileName(file));
-        File.Copy(file, destFile, overwrite: true);
-    }
-
-    foreach (var dir in Directory.GetDirectories(sourceDir))
-    {
-        var destSubDir = Path.Combine(destDir, Path.GetFileName(dir));
-        CopyDirectory(dir, destSubDir);
-    }
-}
-
 async Task InstallJavaTool(ToolConfig tool, string toolsPath)
 {
     ArtifactConfig artifact = tool.Artifact!;
@@ -94,15 +77,20 @@ async Task InstallCppTool(ToolConfig tool, string toolsPath)
     Console.WriteLine("Extracting from " + artifactPath);
     if (File.Exists(artifactPath))
     {
-        var tmpDir = Path.Combine(toolsPath, "tmp");
-        await ZipFile.ExtractToDirectoryAsync(artifactPath, tmpDir, overwriteFiles: true);
-
-        // Find glass folder
-        var exeFolder = Path.Combine(tmpDir, GetPlatformPath());
-
-        await Task.Run(() => CopyDirectory(exeFolder, toolsPath));
-
-        Directory.Delete(tmpDir, recursive: true);
+        using (var archive = ZipFile.OpenRead(artifactPath))
+        {
+            var subDir = GetPlatformPath() + "/"; // e.g., "osx/universal/"
+            foreach (var entry in archive.Entries)
+            {
+                if (entry.FullName.StartsWith(subDir, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(entry.Name))
+                {
+                    var relativePath = entry.FullName.Substring(subDir.Length);
+                    var destinationPath = Path.Combine(toolsPath, relativePath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+                    entry.ExtractToFile(destinationPath, overwrite: true);
+                }
+            }
+        }
     }
 }
 
