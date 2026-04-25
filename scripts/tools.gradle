@@ -59,11 +59,6 @@ def toolsJsonTask = tasks.register('toolsJson', Task) {
     elasticItem['version'] = elasticGitTag
     config << elasticItem
 
-    def utilityItem = [:]
-    utilityItem['name'] = "Utility"
-    utilityItem['version'] = wpilibVersion
-    config << utilityItem
-
     def gbuilder = getGsonBuilder()
     gbuilder.setPrettyPrinting()
     def json = gbuilder.create().toJson(config)
