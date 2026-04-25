@@ -1,18 +1,15 @@
-ext.vsCodeVersion = '1.96.2'
+ext.vsCodeVersion = '1.105.1'
 
-ext.vscodeLinuxHash = '2681040089faf143bed37246f2b0bc0787f6d342d878b1ec4b3737b38833c088'
-ext.vscodeMacHash = '28159393558c4065e72b3c61ff8e0b8c74f3d2060ec5f046a91122aa8819c232'
-ext.vscodeWindowsHash = 'c6c2f97e5cb25a8b576b345f6b8f2021cc168f1726ee370f29d1dbd136ffe9f8'
-ext.vscodeLinuxArm64Hash = '33e93e2899f7a9c20d882d07b157d5fde6f1419f21c6bb95cd676d7a0412690e'
+ext.vscodeLinuxHash = '32a650f1a111df00354ad9571f57d12268376777677dd5af2162ead921067a89'
+ext.vscodeMacHash = '7adfbeb55ef3c2da0afae5d25fe6aaf4fd79cf66b4f781d81bd20b88837938fe'
+ext.vscodeWindowsHash = '18ff74b3b4bdc6763e27ba296d359b3332f9a6c1f5cf67aaa9189ed12698b06d'
+ext.vscodeLinuxArm64Hash = '4579e52664fe2df2d80724b420abab1827d30520f0e766f7608403dba2fe94bd'
 
-ext.cppToolsVersion = '1.23.2'
+ext.cppToolsVersion = '1.28.3'
 ext.javaExtVersion = '1.38.0'
-ext.javaDebugVersion = '0.58.1'
+ext.javaExtPatchVersion = '403'
+ext.javaDebugVersion = '0.58.2'
 ext.javaDependencyVersion = '0.24.1'
-ext.pythonExtVersion = '2024.22.1'
-ext.pylanceVersion = '2024.12.1'
-ext.isortVersion = '2023.10.1'
-ext.blackVersion = '2024.4.0'
 
 ext.wpilibVersion = gradleRioVersion
 

@@ -34,44 +34,22 @@ namespace WPILibInstaller.ViewModels
         [ObservableProperty]
         public partial string TextTotal { get; set; } = "";
 
-        private async void CreateLinuxShortcut(string name, string frcYear, string wmClass, string iconName, CancellationToken token)
+        private async void CreateLinuxShortcut(string name, string executableName, String frcYear, string wmClass, string iconName, CancellationToken token)
         {
             var launcherFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share/applications", $@"{name.Replace(' ', '_').Replace(")", "").Replace("(", "")}_{frcYear}.desktop");
-            string contents;
-            if (name.Contains("WPILib"))
-            {
-                var nameNoWPILib = name.Remove(name.Length - " (WPILib)".Length);
-                contents = $@"#!/usr/bin/env xdg-open
+            string contents = $@"#!/usr/bin/env xdg-open
 [Desktop Entry]
 Version=1.0
 Type=Application
 Categories=Robotics;Science
 Name={name} {frcYear}
-Comment={nameNoWPILib} tool for the 2025 FIRST Robotics Competition season
-Exec={configurationProvider.InstallDirectory}/tools/{nameNoWPILib}.sh
+Comment={name} tool for the {frcYear} FIRST Robotics Competition season
+Exec={configurationProvider.InstallDirectory}/tools/{executableName}
 Icon={configurationProvider.InstallDirectory}/icons/{iconName}
 Terminal=false
 StartupNotify=true
 StartupWMClass={wmClass}
-";
-
-            }
-            else
-            {
-                contents = $@"#!/usr/bin/env xdg-open
-[Desktop Entry]
-Version=1.0
-Type=Application
-Categories=Robotics;Science
-Name={name} {frcYear}
-Comment={name} tool for the 2025 FIRST Robotics Competition season
-Exec={configurationProvider.InstallDirectory}/tools/{name}.sh
-Icon={configurationProvider.InstallDirectory}/icons/{iconName}
-Terminal=false
-StartupNotify=true
-StartupWMClass={wmClass}
-";
-            }
+".ReplaceLineEndings("\n");
             var launcherPath = Path.GetDirectoryName(launcherFile);
             if (launcherPath != null)
             {
@@ -80,6 +58,11 @@ StartupWMClass={wmClass}
             await File.WriteAllTextAsync(launcherFile, contents, token);
         }
 
+
+        private void CreateLinuxShortcut(String name, String frcYear, String wmClass, String iconName, CancellationToken token)
+        {
+            CreateLinuxShortcut(name, name, frcYear, wmClass, iconName, token);
+        }
         public bool Succeeded { get; private set; }
 
         private readonly Task runInstallTask;
@@ -301,6 +284,44 @@ StartupWMClass={wmClass}
             }
         }
 
+        private static void SetIfNotSetIgnoreSync(string key, object value, JsonObject settingsJson)
+        {
+            SetIfNotSet(key, value, settingsJson);
+            IgnoreSync(key, settingsJson);
+        }
+
+        private static void IgnoreSync(String key, JsonObject settingsJson)
+        {
+            if (settingsJson.ContainsKey("settingsSync.ignoredSettings"))
+            {
+                JsonArray? ignoredSettings = settingsJson["settingsSync.ignoredSettings"]?.AsArray(); ;
+                bool keyFound = false;
+                if (ignoredSettings != null)
+                {
+                    foreach (JsonNode? result in ignoredSettings)
+                    {
+                        if (result != null)
+                        {
+                            if (result.ToString().Equals(key, StringComparison.Ordinal))
+                            {
+                                keyFound = true;
+                            }
+                        }
+                    }
+                    if (!keyFound)
+                    {
+                        ignoredSettings.Add((JsonNode)key);
+                        settingsJson["settingsSync.ignoredSettings"] = ignoredSettings;
+                    }
+                }
+            }
+            else
+            {
+                JsonArray? ignoredSettings = new JsonArray(key);
+                settingsJson["settingsSync.ignoredSettings"] = ignoredSettings;
+            }
+        }
+
         private async Task ConfigureVsCodeSettings()
         {
             if (!vsInstallProvider.Model.InstallExtensions) return;
@@ -339,12 +360,14 @@ StartupWMClass={wmClass}
             }
 
             SetIfNotSet("java.jdt.ls.java.home", Path.Combine(homePath, "jdk"), settingsJson);
-            SetIfNotSet("extensions.autoUpdate", false, settingsJson);
-            SetIfNotSet("extensions.autoCheckUpdates", false, settingsJson);
-            SetIfNotSet("extensions.ignoreRecommendations", true, settingsJson);
-            SetIfNotSet("update.mode", "none", settingsJson);
-            SetIfNotSet("update.showReleaseNotes", false, settingsJson);
-            SetIfNotSet("java.completion.matchCase", "off", settingsJson);
+            SetIfNotSetIgnoreSync("extensions.autoUpdate", false, settingsJson);
+            SetIfNotSetIgnoreSync("extensions.autoCheckUpdates", false, settingsJson);
+            SetIfNotSetIgnoreSync("extensions.ignoreRecommendations", true, settingsJson);
+            SetIfNotSetIgnoreSync("extensions.showRecommendationsOnlyOnDemand", true, settingsJson);
+            SetIfNotSetIgnoreSync("update.mode", "none", settingsJson);
+            SetIfNotSetIgnoreSync("update.showReleaseNotes", false, settingsJson);
+            SetIfNotSetIgnoreSync("java.completion.matchCase", "off", settingsJson);
+            SetIfNotSetIgnoreSync("workbench.secondarySideBar.defaultVisibility", "hidden", settingsJson);
 
             string os;
             string path_seperator;
@@ -394,6 +417,7 @@ StartupWMClass={wmClass}
                     }
                 }
             }
+            IgnoreSync("terminal.integrated.env." + os, settingsJson);
 
             if (settingsJson.ContainsKey("java.configuration.runtimes"))
             {
@@ -443,6 +467,29 @@ StartupWMClass={wmClass}
                 };
                 javaConfigProps.Add((JsonNode)javaConfigProp);
                 settingsJson["java.configuration.runtimes"] = javaConfigProps;
+            }
+
+            if (settingsJson.ContainsKey("settingsSync.ignoredExtensions"))
+            {
+                JsonArray ignoredExtensions = settingsJson["settingsSync.ignoredExtensions"]?.AsArray() ?? new JsonArray();
+                Boolean keyFound = false;
+                foreach (JsonNode? result in ignoredExtensions)
+                {
+                    if (result != null && result.ToString() == "wpilibsuite.vscode-wpilib")
+                    {
+                        keyFound = true;
+                    }
+                }
+                if (!keyFound)
+                {
+                    ignoredExtensions.Add((JsonNode)"wpilibsuite.vscode-wpilib");
+                    settingsJson["settingsSync.ignoredExtensions"] = ignoredExtensions;
+                }
+            }
+            else
+            {
+                JsonArray ignoredExtensions = new JsonArray("wpilibsuite.vscode-wpilib");
+                settingsJson["settingsSync.ignoredExtensions"] = ignoredExtensions;
             }
 
             var serialized = settingsJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
@@ -849,6 +896,7 @@ StartupWMClass={wmClass}
             Progress = 0;
             foreach (var item in installs)
             {
+                Text = "Installing Extension " + item.Name;
                 var startInfo = new ProcessStartInfo(codeExe, "--install-extension " + Path.Combine(configurationProvider.InstallDirectory, "vsCodeExtensions", item.Vsix))
                 {
                     UseShellExecute = false,
@@ -893,27 +941,31 @@ StartupWMClass={wmClass}
             }
 
             // Add Tool Shortcuts
-            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "Glass.exe"), $"{frcYear} WPILib Tools/Glass {frcYear}", $"Glass {frcYear}", ""));
-            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "OutlineViewer.exe"), $"{frcYear} WPILib Tools/OutlineViewer {frcYear}", $"OutlineViewer {frcYear}", ""));
-            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "SysId.exe"), $"{frcYear} WPILib Tools/SysId {frcYear}", $"SysId {frcYear}", ""));
-            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "DataLogTool.exe"), $"{frcYear} WPILib Tools/Data Log Tool {frcYear}", $"Data Log Tool {frcYear}", ""));
-            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "WPIcal.exe"), $"{frcYear} WPILib Tools/WPIcal {frcYear}", $"WPIcal {frcYear}", ""));
+            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "glass.exe"), $"{frcYear} WPILib Tools/Glass {frcYear}", $"Glass {frcYear}", ""));
+            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "outlineviewer.exe"), $"{frcYear} WPILib Tools/OutlineViewer {frcYear}", $"OutlineViewer {frcYear}", ""));
+
+            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "sysid.exe"), $"{frcYear} WPILib Tools/SysId {frcYear}", $"SysId {frcYear}", ""));
+
+            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "datalogtool.exe"), $"{frcYear} WPILib Tools/Data Log Tool {frcYear}", $"Data Log Tool {frcYear}", ""));
+            shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "wpical.exe"), $"{frcYear} WPILib Tools/WPIcal {frcYear}", $"WPIcal {frcYear}", ""));
             shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "advantagescope", "AdvantageScope (WPILib).exe"), $"{frcYear} WPILib Tools/AdvantageScope (WPILib) {frcYear}", $"AdvantageScope (WPILib) {frcYear}", ""));
             shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "elastic", "elastic_dashboard.exe"), $"{frcYear} WPILib Tools/Elastic (WPILib) {frcYear}", $"Elastic (WPILib) {frcYear}", ""));
 
-            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "Glass.exe"), $"Programs/{frcYear} WPILib Tools/Glass {frcYear}", $"Glass {frcYear}", ""));
-            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "OutlineViewer.exe"), $"Programs/{frcYear} WPILib Tools/OutlineViewer {frcYear}", $"OutlineViewer {frcYear}", ""));
-            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "SysId.exe"), $"Programs/{frcYear} WPILib Tools/SysId {frcYear}", $"SysId {frcYear}", ""));
-            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "DataLogTool.exe"), $"Programs/{frcYear} WPILib Tools/Data Log Tool {frcYear}", $"Data Log Tool {frcYear}", ""));
-            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "WPIcal.exe"), $"Programs/{frcYear} WPILib Tools/WPIcal {frcYear}", $"WPIcal {frcYear}", ""));
+            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "glass.exe"), $"Programs/{frcYear} WPILib Tools/Glass {frcYear}", $"Glass {frcYear}", ""));
+            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "outlineviewer.exe"), $"Programs/{frcYear} WPILib Tools/OutlineViewer {frcYear}", $"OutlineViewer {frcYear}", ""));
+
+            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "sysid.exe"), $"Programs/{frcYear} WPILib Tools/SysId {frcYear}", $"SysId {frcYear}", ""));
+
+            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "datalogtool.exe"), $"Programs/{frcYear} WPILib Tools/Data Log Tool {frcYear}", $"Data Log Tool {frcYear}", ""));
+            shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "tools", "wpical.exe"), $"Programs/{frcYear} WPILib Tools/WPIcal {frcYear}", $"WPIcal {frcYear}", ""));
             shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "advantagescope", "AdvantageScope (WPILib).exe"), $"Programs/{frcYear} WPILib Tools/AdvantageScope (WPILib) {frcYear}", $"AdvantageScope (WPILib) {frcYear}", ""));
             shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "elastic", "elastic_dashboard.exe"), $"Programs/{frcYear} WPILib Tools/Elastic (WPILib) {frcYear}", $"Elastic (WPILib) {frcYear}", ""));
 
             if (toInstallProvider.Model.InstallEverything)
             {
                 // Add Documentation Shortcuts
-                shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "documentation", "rtd", "frc-docs-latest", "index.html"), $"{frcYear} WPILib Documentation", $"{frcYear} WPILib Documentation", wpilibIconLocation));
-                shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "documentation", "rtd", "frc-docs-latest", "index.html"), $"Programs/{frcYear} WPILib Documentation", $"{frcYear} WPILib Documentation", wpilibIconLocation));
+                shortcutData.DesktopShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "documentation", "frc-docs", "index.html"), $"{frcYear} WPILib Documentation", $"{frcYear} WPILib Documentation", wpilibIconLocation));
+                shortcutData.StartMenuShortcuts.Add(new ShortcutInfo(Path.Join(frcHomePath, "documentation", "frc-docs", "index.html"), $"Programs/{frcYear} WPILib Documentation", $"{frcYear} WPILib Documentation", wpilibIconLocation));
             }
 
             var serializedData = JsonSerializer.Serialize(shortcutData, SourceGenerationContext.Default.ShortcutData);
@@ -997,7 +1049,7 @@ Icon={configurationProvider.InstallDirectory}/icons/wpilib-icon-256.png
 Terminal=false
 StartupNotify=true
 StartupWMClass=Code
-";
+".ReplaceLineEndings("\n");
 
                     var desktopPath = Path.GetDirectoryName(desktopFile);
                     if (desktopPath != null)
@@ -1024,13 +1076,13 @@ StartupWMClass=Code
                     }, token);
                 }
 
-                CreateLinuxShortcut("AdvantageScope (WPILib)", frcYear, "AdvantageScope (WPILib)", "advantagescope.png", token);
-                CreateLinuxShortcut("Elastic (WPILib)", frcYear, "elastic_dashboard", "elastic.png", token);
-                CreateLinuxShortcut("Glass", frcYear, "Glass - DISCONNECTED", "glass.png", token);
-                CreateLinuxShortcut("OutlineViewer", frcYear, "OutlineViewer - DISCONNECTED", "outlineviewer.png", token);
-                CreateLinuxShortcut("DataLogTool", frcYear, "Datalog Tool", "datalogtool.png", token);
-                CreateLinuxShortcut("SysId", frcYear, "System Identification", "sysid.png", token);
-                CreateLinuxShortcut("WPIcal", frcYear, "WPIcal", "wpical.png", token);
+                CreateLinuxShortcut("AdvantageScope (WPILib)", "AdvantageScope", frcYear, "AdvantageScope (WPILib)", "advantagescope.png", token);
+                CreateLinuxShortcut("Elastic (WPILib)", "Elastic", frcYear, "elastic_dashboard", "elastic.png", token);
+                CreateLinuxShortcut("Glass", "glass", frcYear, "Glass - DISCONNECTED", "glass.png", token);
+                CreateLinuxShortcut("OutlineViewer", "outlineviewer", frcYear, "OutlineViewer - DISCONNECTED", "outlineviewer.png", token);
+                CreateLinuxShortcut("DataLogTool", "datalogtool", frcYear, "Datalog Tool", "datalogtool.png", token);
+                CreateLinuxShortcut("SysId", "sysid", frcYear, "System Identification", "sysid.png", token);
+                CreateLinuxShortcut("WPIcal", "wpical", frcYear, "WPIcal", "wpical.png", token);
             }
         }
     }

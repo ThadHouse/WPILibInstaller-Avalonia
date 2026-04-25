@@ -19,7 +19,8 @@ def cppToolsArtifacts = [
   'edu.wpi.first.tools:OutlineViewer',
   'edu.wpi.first.tools:DataLogTool',
   'edu.wpi.first.tools:SysId',
-  'edu.wpi.first.tools:wpical'
+  'edu.wpi.first.tools:wpical',
+  'edu.wpi.first.tools:processstarter'
 ]
 
 def skipNewPlatformTools = [
@@ -276,7 +277,7 @@ ext.mavenZipSetup = { AbstractArchiveTask zip->
   }
 
   zip.from(project.zipTree(downloadReadTheDocs.get().outputFiles.first())) {
-    into '/documentation/rtd'
+    into '/documentation'
   }
 
   zip.from(project.zipTree(downloadPythonAPI.get().outputFiles.first())) {

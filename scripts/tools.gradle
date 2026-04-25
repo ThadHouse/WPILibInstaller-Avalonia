@@ -1,38 +1,10 @@
 def toolsJson = file("$buildDir/tools.json")
-def scriptBaseFile = file("files/ScriptBase.vbs")
-def scriptBaseUnixFile = file("files/ScriptBase.sh")
-
-def scriptBaseCppFile = file("files/ScriptBaseCpp.vbs")
-def scriptBaseCppUnixFile = file("files/ScriptBaseCpp.sh")
-
-def advantageScopeScriptFile = file("files/AdvantageScope.vbs")
-def advantageScopeScriptUnixFile = file("files/AdvantageScope.sh")
-
-def elasticScriptFile = file("files/Elastic.vbs")
-def elasticScriptUnixFile = file("files/Elastic.sh")
 
 def toolsJsonTask = tasks.register('toolsJson', Task) {
 
   doLast {
-    def resolvedDeps = configurations.tools.resolvedConfiguration.resolvedArtifacts.toList()
-    def config = []
-    resolvedDeps.each {
-      def item = [:]
-      item['name'] = it.name
-      item['version'] = it.moduleVersion.id.version
-      def artif = [:]
-      artif['classifier'] = it.classifier
-      artif['extension'] = it.extension
-      def id = it.moduleVersion.id
-      artif['groupId'] = id.group
-      artif['version'] = id.version
-      artif['artifactId'] = id.name
-      item['artifact'] = artif
-      item['cpp'] = false
-      config << item
-    }
-
     def resolvedCppDeps = configurations.cppTools.resolvedConfiguration.resolvedArtifacts.toList()
+    def config = []
     resolvedCppDeps.each {
       def item = [:]
       item['name'] = it.name
@@ -46,6 +18,23 @@ def toolsJsonTask = tasks.register('toolsJson', Task) {
       artif['artifactId'] = id.name
       item['artifact'] = artif
       item['cpp'] = true
+      config << item
+    }
+
+    def resolvedDeps = configurations.tools.resolvedConfiguration.resolvedArtifacts.toList()
+    resolvedDeps.each {
+      def item = [:]
+      item['name'] = it.name
+      item['version'] = it.moduleVersion.id.version
+      def artif = [:]
+      artif['classifier'] = it.classifier
+      artif['extension'] = it.extension
+      def id = it.moduleVersion.id
+      artif['groupId'] = id.group
+      artif['version'] = id.version
+      artif['artifactId'] = id.name
+      item['artifact'] = artif
+      item['cpp'] = false
       config << item
     }
 
@@ -83,49 +72,9 @@ ext.toolsConfig = {
 ext.toolsSetup = { AbstractArchiveTask zip->
   zip.dependsOn toolsJsonTask
   zip.inputs.file toolsJson
-  zip.inputs.file scriptBaseFile
-  zip.inputs.file scriptBaseUnixFile
 
   zip.from (toolsJson) {
     into '/tools'
-  }
-
-  if (project.ext.buildClassifier == 'Windows') {
-    zip.from (scriptBaseFile) {
-      into '/tools'
-    }
-
-    zip.from (scriptBaseCppFile) {
-      into '/tools'
-    }
-
-    zip.from (advantageScopeScriptFile) {
-      into '/tools'
-    }
-
-    zip.from (elasticScriptFile) {
-      into '/tools'
-    }
-  } else {
-    zip.from (scriptBaseUnixFile) {
-      into '/tools'
-      filePermissions { unix(0755) }
-    }
-
-    zip.from (scriptBaseCppUnixFile) {
-      into '/tools'
-      filePermissions { unix(0755) }
-    }
-
-    zip.from (advantageScopeScriptUnixFile) {
-      into '/tools'
-      filePermissions { unix(0755) }
-    }
-
-    zip.from (elasticScriptUnixFile) {
-      into '/tools'
-      filePermissions { unix(0755) }
-    }
   }
 
 }

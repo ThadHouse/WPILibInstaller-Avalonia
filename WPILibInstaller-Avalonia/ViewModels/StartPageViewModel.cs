@@ -384,6 +384,16 @@ namespace WPILibInstaller.ViewModels
 
         public override PageViewModelBase MoveNext()
         {
+            if (OperatingSystem.IsWindows())
+            {
+                bool isWindows10 = OperatingSystem.IsWindowsVersionAtLeast(10);
+                bool is64Bit = IntPtr.Size == 8;
+                if (!isWindows10 || !is64Bit || (isWindows10 && Environment.OSVersion.Version.Build < 22000))
+                {
+                    return viewModelResolver.Resolve<DeprecatedOsPageViewModel>();
+                }
+            }
+
             return viewModelResolver.Resolve<ConfigurationPageViewModel>();
         }
 
