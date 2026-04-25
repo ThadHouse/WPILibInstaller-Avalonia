@@ -19,9 +19,11 @@ def toolsUpdaterTask = tasks.register('toolsUpdater', Exec) {
 
   commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime, "/p:Version=$pubVersion", "-o", toolsUpdaterOutputDir
 
+  def okToSign = project.hasProperty("developerID") && (project.hasProperty('macBuild') || project.hasProperty('macBuildArm'))
+
   doLast {
     // We can sign the app because we have a Developer ID.
-    if (project.hasProperty("developerID") && (project.hasProperty('macBuild') || project.hasProperty('macBuildArm'))) {
+    if (okToSign) {
         println "Received a Developer ID -- signing the tools binary..."
         String identity = project.property("developerID")
         execOperations.exec {

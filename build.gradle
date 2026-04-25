@@ -185,6 +185,7 @@ def upgradeConfigFile = file("$buildDir/upgradeConfig.json")
 
 def upgradeConfigFileTask = tasks.register('generateUpgradeConfigFile', Task) { Task task ->
     task.outputs.file upgradeConfigFile
+    def classifier = project.ext.buildClassifier
 
     def configurations = []
     configurations << toolsConfig()
@@ -200,7 +201,7 @@ def upgradeConfigFileTask = tasks.register('generateUpgradeConfigFile', Task) { 
 
         config['FrcYear'] = frcYear
 
-        config['InstallerType'] = project.ext.buildClassifier
+        config['InstallerType'] = classifier
 
         configurations.each {
             it.second(config)
@@ -538,5 +539,5 @@ tasks.withType(AbstractArchiveTask).configureEach {
 }
 
 wrapper {
-    gradleVersion = '9.2.0'
+    gradleVersion = '9.4.1'
 }

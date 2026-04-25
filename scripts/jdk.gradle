@@ -5,35 +5,35 @@ def jdkVersionUnderscore = jdkVersion.replace('+', '_')
 def jdkVersionEscaped = jdkVersion.replace('+', '%2B')
 
 def downloadLinuxJdk = tasks.register('downloadLinuxJdk', Download) {
-  src "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK21U-jdk_x64_linux_hotspot_${jdkVersionUnderscore}.tar.gz"
+  src "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK25U-jdk_x64_linux_hotspot_${jdkVersionUnderscore}.tar.gz"
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
 }
 
 def downloadLinuxArm64Jdk = tasks.register('downloadLinuxJdkArm64', Download) {
-  src "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK21U-jdk_aarch64_linux_hotspot_${jdkVersionUnderscore}.tar.gz"
+  src "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK25U-jdk_aarch64_linux_hotspot_${jdkVersionUnderscore}.tar.gz"
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
 }
 
 def downloadMacJdk = tasks.register('downloadMacJdk', Download) {
-  src "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK21U-jdk_x64_mac_hotspot_${jdkVersionUnderscore}.tar.gz"
+  src "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK25U-jdk_x64_mac_hotspot_${jdkVersionUnderscore}.tar.gz"
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
 }
 
 def downloadMacArmJdk = tasks.register('downloadMacArmJdk', Download) {
-  src "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK21U-jdk_aarch64_mac_hotspot_${jdkVersionUnderscore}.tar.gz"
+  src "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK25U-jdk_aarch64_mac_hotspot_${jdkVersionUnderscore}.tar.gz"
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
 }
 
 def downloadWindowsJdk = tasks.register('downloadWindowsJdk', Download) {
-  src "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK21U-jdk_x64_windows_hotspot_${jdkVersionUnderscore}.zip"
+  src "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-$jdkVersionEscaped/OpenJDK25U-jdk_x64_windows_hotspot_${jdkVersionUnderscore}.zip"
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
