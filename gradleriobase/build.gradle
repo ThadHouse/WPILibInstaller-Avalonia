@@ -10,6 +10,7 @@ plugins {
     id "java"
     id 'cpp'
     id "edu.wpi.first.GradleRIO2027"
+    id "com.gradleup.shadow" version "9.3.0"
 }
 
 deploy {
@@ -97,8 +98,8 @@ wpi.sim.addWebsocketsServer().defaultEnabled = true
 wpi.sim.addWebsocketsClient().defaultEnabled = true
 wpi.sim.addXRPClient().defaultEnabled = true
 
-deployJavaArtifact.jarTask = jar
-wpi.java.configureExecutableTasks(jar)
+deployJavaArtifact.jarTask = shadowJar
+wpi.java.configureExecutableTasks(shadowJar)
 
 def wpilibFoundVersion = wpi.versions.wpilibVersion.get()
 
