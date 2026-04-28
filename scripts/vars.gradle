@@ -1,13 +1,13 @@
-def varsfile = file("files/frcvars.bat")
-def varsfilePS = file("files/frcvars.ps1")
-def varsfilesh = file("files/frcvars.sh")
-def codefile = file("files/frccode")
-def codefileCmd = file("files/frccode.cmd")
+def varsfile = file("files/wpilibvars.bat")
+def varsfilePS = file("files/wpilibvars.ps1")
+def varsfilesh = file("files/wpilibvars.sh")
+def codefile = file("files/wpilibcode")
+def codefileCmd = file("files/wpilibcode.cmd")
 def icoFile = file("WPILibInstaller-Avalonia/Assets/wpilib-256.ico")
-def codeAppArmorFile = file("files/frccode.AppArmor")
+def codeAppArmorFile = file("files/wpilibcode.AppArmor")
 def advantagescopeAppArmorFile = file("files/advantagescope.AppArmor")
 
-def pathfolder = 'frccode'
+def pathfolder = 'wpilibcode'
 def iconfolder = 'icons'
 
 ext.varConfigSetup = {
@@ -31,35 +31,35 @@ ext.varsZipSetup = { AbstractArchiveTask zip->
     zip.from (varsfile) {
       into "/$pathfolder"
       rename {
-        "frcvars${frcYear}.bat"
+        "wpilibvars${wpilibYear}.bat"
       }
     }
 
     zip.from (varsfilePS) {
       into "/$pathfolder"
       rename {
-        "frcvars${frcYear}.ps1"
+        "wpilibvars${wpilibYear}.ps1"
       }
     }
 
     zip.from (codefileCmd) {
       into "/$pathfolder"
       rename {
-        "frccode${frcYear}.cmd"
+        "wpilibcode${wpilibYear}.cmd"
       }
     }
   } else {
     zip.from (varsfilesh) {
       into "/$pathfolder"
       rename {
-        "frcvars${frcYear}.sh"
+        "wpilibvars${wpilibYear}.sh"
       }
     }
 
     zip.from (codefile) {
       into "/$pathfolder"
       rename {
-        "frccode${frcYear}"
+        "wpilibcode${wpilibYear}"
       }
     }
   }
@@ -76,7 +76,7 @@ ext.varsZipSetup = { AbstractArchiveTask zip->
     zip.from (codeAppArmorFile) {
       into "/$pathfolder/AppArmor"
       rename {
-        "frccode"
+        "wpilibcode"
       }
     }
 

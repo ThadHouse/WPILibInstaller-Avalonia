@@ -1,6 +1,6 @@
-$frcHome = (Get-Item $PSScriptRoot).Parent.FullName
+$wpilibHome = (Get-Item $PSScriptRoot).Parent.FullName
 
-$javaHome = Join-Path $frcHome "jdk"
+$javaHome = Join-Path $wpilibHome "jdk"
 
 $env:JAVA_HOME = $javaHome
 

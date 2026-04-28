@@ -15,125 +15,124 @@ def toolArtifacts = [
 ]
 
 def cppToolsArtifacts = [
-  'edu.wpi.first.tools:Glass',
-  'edu.wpi.first.tools:OutlineViewer',
-  'edu.wpi.first.tools:DataLogTool',
-  'edu.wpi.first.tools:SysId',
-  'edu.wpi.first.tools:wpical',
-  'edu.wpi.first.tools:processstarter'
+  'org.wpilib.tools:Glass',
+  'org.wpilib.tools:OutlineViewer',
+  'org.wpilib.tools:DataLogTool',
+  'org.wpilib.tools:SysId',
+  'org.wpilib.tools:wpical'
 ]
 
 def skipNewPlatformTools = [
 ]
 
 def skipLinuxArm64PlatformTools = [
-  'edu.wpi.first.tools:wpical'
+  'org.wpilib.tools:wpical'
 ]
 
 def skipTools = []
 
 dependencies {
-    documentationCpp "edu.wpi.first.wpilibc:documentation:${project.ext.gradlerioMetadata.wpilibVersion}@zip"
-    documentationJava "edu.wpi.first.wpilibj:documentation:${project.ext.gradlerioMetadata.wpilibVersion}@zip"
+    documentationCpp "org.wpilib.wpilibc:documentation:${project.ext.gradlerioMetadata.wpilibVersion}@zip"
+    documentationJava "org.wpilib.wpilibj:documentation:${project.ext.gradlerioMetadata.wpilibVersion}@zip"
     if (project.ext.buildClassifier == 'Windows') {
-        runtimex64 "edu.wpi.first.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip"
+        runtimex64 "org.wpilib.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip"
     }
 }
 
 dependencies {
   project.ext.gradlerioMetadata.dependencies.each { dep->
-    def foundTool = false
+        def foundTool = false
 
-    skipTools.each { tool->
-      if ("$dep.groupId:$dep.artifactId" == tool) {
-        def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-        println "Skipping " + depString
-        foundTool = true
-        return
-      }
-    }
-
-    if (foundTool) {
-      return
-    }
-
-    if (project.hasProperty('macBuildArm') || project.hasProperty('linuxBuildArm64')) {
-      skipNewPlatformTools.each { tool->
-        if ("$dep.groupId:$dep.artifactId" == tool) {
-          def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-          println "Skipping because arm " + depString
-          foundTool = true
-          return
-        }
-      }
-    }
-    if (project.hasProperty('linuxBuildArm64')) {
-      skipLinuxArm64PlatformTools.each { tool->
-        if ("$dep.groupId:$dep.artifactId" == tool) {
-          def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-          println "Skipping because arm " + depString
-          foundTool = true
-          return
-        }
-      }
-    }
-
-    if (foundTool) {
-      return
-    }
-
-    cppToolsArtifacts.each { tool->
-      if ("$dep.groupId:$dep.artifactId" == tool) {
-        def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-        cppTools depString
-        println depString
-        foundTool = true
-        return
-      }
-    }
-
-    if (foundTool) {
-      return
-    }
-
-    toolArtifacts.each { tool->
-      if ("$dep.groupId:$dep.artifactId" == tool) {
-        if (dep.classifier == null) {
-          def depString = "$dep.groupId:$dep.artifactId:$dep.version:@$dep.extension"
-          tools depString
-          println depString
-          foundTool = true
-          return
-        } else {
-          if (dep.classifier != 'sources' && dep.classifier != 'javadoc') {
+        skipTools.each { tool->
+          if ("$dep.groupId:$dep.artifactId" == tool) {
             def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-            tools depString
+            println "Skipping " + depString
+            foundTool = true
+            return
+          }
+        }
+
+        if (foundTool) {
+          return
+        }
+
+        if (project.hasProperty('macBuildArm') || project.hasProperty('linuxBuildArm64')) {
+          skipNewPlatformTools.each { tool->
+            if ("$dep.groupId:$dep.artifactId" == tool) {
+              def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
+              println "Skipping because arm " + depString
+              foundTool = true
+              return
+            }
+          }
+        }
+        if (project.hasProperty('linuxBuildArm64')) {
+          skipLinuxArm64PlatformTools.each { tool->
+            if ("$dep.groupId:$dep.artifactId" == tool) {
+              def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
+              println "Skipping because arm " + depString
+              foundTool = true
+              return
+            }
+          }
+        }
+
+        if (foundTool) {
+          return
+        }
+
+        cppToolsArtifacts.each { tool->
+          if ("$dep.groupId:$dep.artifactId" == tool) {
+            def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
+            cppTools depString
             println depString
             foundTool = true
             return
           }
         }
+
+        if (foundTool) {
+          return
+        }
+
+        toolArtifacts.each { tool->
+          if ("$dep.groupId:$dep.artifactId" == tool) {
+            if (dep.classifier == null) {
+              def depString = "$dep.groupId:$dep.artifactId:$dep.version:@$dep.extension"
+              tools depString
+              println depString
+              foundTool = true
+              return
+            } else {
+              if (dep.classifier != 'sources' && dep.classifier != 'javadoc') {
+                def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
+                tools depString
+                println depString
+                foundTool = true
+                return
+              }
+            }
+          }
+        }
+
+        if (foundTool) {
+          return
+        }
+
+        println dep
+        if (dep.classifier == null) {
+         offline "$dep.groupId:$dep.artifactId:$dep.version:@$dep.extension"
+        } else if (dep.classifier.startsWith(project.ext.currentClassifier)) {
+          def newClassifier = dep.classifier.replace(project.ext.currentClassifier, project.ext.forceNativeClassifier)
+          offline "$dep.groupId:$dep.artifactId:$dep.version:$newClassifier@$dep.extension"
+        } else if (dep.classifier.contains('systemcore')) {
+         offline "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
+        } else if (dep.classifier.contains('headers')) {
+         offline "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
+        } else if (dep.classifier.contains('sources')) {
+         offline "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
+        }
       }
-    }
-
-    if (foundTool) {
-      return
-    }
-
-    println dep
-    if (dep.classifier == null) {
-      offline "$dep.groupId:$dep.artifactId:$dep.version:@$dep.extension"
-    } else if (dep.classifier.startsWith(project.ext.currentClassifier)) {
-      def newClassifier = dep.classifier.replace(project.ext.currentClassifier, project.ext.forceNativeClassifier)
-      offline "$dep.groupId:$dep.artifactId:$dep.version:$newClassifier@$dep.extension"
-    } else if (dep.classifier.contains('systemcore')) {
-      offline "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-    } else if (dep.classifier.contains('headers')) {
-      offline "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-    } else if (dep.classifier.contains('sources')) {
-      offline "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"
-    }
-  }
 }
 
 repositories {

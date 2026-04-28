@@ -21,7 +21,7 @@ namespace WPILibInstaller.ViewModels
             if (!isWindows10 || !is64Bit)
             {
                 DeprecatedMessage1 = "You are using an unsupported Operating System or Architecture";
-                DeprecatedMessage2 = "You will not be able to install or run WPILib " + this.configurationProvider.UpgradeConfig.FrcYear;
+                DeprecatedMessage2 = "You will not be able to install or run WPILib " + this.configurationProvider.UpgradeConfig.WpilibYear;
             }
             else if (isWindows10 && Environment.OSVersion.Version.Build < 22000)
             {

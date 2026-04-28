@@ -45,7 +45,7 @@ configurations {
 
 dependencies {
     if (project.ext.buildClassifier == 'Windows') {
-        runtimex64 "edu.wpi.first.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip"
+        runtimex64 "org.wpilib.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip"
     }
 }
 

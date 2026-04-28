@@ -9,8 +9,8 @@ pluginManagement {
     }
     resolutionStrategy {
         eachPlugin {
-            if ( requested.id.id == 'edu.wpi.first.GradleRIO2027' ) {
-                useModule( "edu.wpi.first.GradleRIO2027:edu.wpi.first.GradleRIO2027.gradle.plugin:$gradleRioVersion" )
+            if ( requested.id.id == 'org.wpilib.GradleRIO' ) {
+                useModule( "org.wpilib.GradleRIO:org.wpilib.GradleRIO.gradle.plugin:$gradleRioVersion" )
             }
         }
     }

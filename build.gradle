@@ -199,7 +199,7 @@ def upgradeConfigFileTask = tasks.register('generateUpgradeConfigFile', Task) { 
     doLast {
         def config = [:]
 
-        config['FrcYear'] = frcYear
+        config['WpilibYear'] = wpilibYear
 
         config['InstallerType'] = classifier
 
