@@ -9,7 +9,7 @@ import org.gradle.process.ExecOperations
 
 buildscript {
     dependencies {
-        classpath 'com.google.code.gson:gson:2.8.9'
+        classpath 'com.google.code.gson:gson:2.8.6'
     }
 }
 
