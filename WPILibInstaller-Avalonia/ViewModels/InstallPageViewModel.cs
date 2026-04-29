@@ -1051,7 +1051,7 @@ Exec={configurationProvider.InstallDirectory}/wpilibcode/wpilibcode{wpilibYear}
 Icon={configurationProvider.InstallDirectory}/icons/wpilib-icon-256.png
 Terminal=false
 StartupNotify=true
-StartupWMClass=Code
+StartupWMClass=code
 ".ReplaceLineEndings("\n");
 
                     var desktopPath = Path.GetDirectoryName(desktopFile);
