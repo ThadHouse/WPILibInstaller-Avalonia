@@ -199,28 +199,28 @@ def downloadPythonAPI = tasks.register('downloadPythonAPI', Download) {
 }
 
 def downloadCommandsv2 = tasks.register('downloadCommandsv2', Download) {
-  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/2027/commandsv2/CommandsV2.json'
+  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/main/commandsv2/CommandsV2.json'
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
 }
 
 def downloadCommandsv3 = tasks.register('downloadCommandsv3', Download) {
-  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/2027/commandsv3/CommandsV3.json'
+  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/main/commandsv3/CommandsV3.json'
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
 }
 
 def downloadRomiVendor = tasks.register('downloadRomiVendor', Download) {
-  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/2027/romiVendordep/RomiVendordep.json'
+  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/main/romiVendordep/RomiVendordep.json'
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
 }
 
 def downloadXrpVendor = tasks.register('downloadXrpVendor', Download) {
-  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/2027/xrpVendordep/XRPVendordep.json'
+  src 'https://raw.githubusercontent.com/wpilibsuite/allwpilib/main/xrpVendordep/XRPVendordep.json'
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite false
