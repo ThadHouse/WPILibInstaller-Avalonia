@@ -44,7 +44,7 @@ Type=Application
 Categories=Robotics;Science
 Name={name} {wpilibYear}
 Comment={name} tool for the {wpilibYear} FIRST Robotics Competition season
-Exec={configurationProvider.InstallDirectory}/tools/{executableName}
+Exec={(Path.IsPathRooted(executableName) || executableName.Contains('/') ? executableName : $"{configurationProvider.InstallDirectory}/tools/{executableName}")}
 Icon={configurationProvider.InstallDirectory}/icons/{iconName}
 Terminal=false
 StartupNotify=true
@@ -1079,8 +1079,9 @@ StartupWMClass=code
                     }, token);
                 }
 
-                CreateLinuxShortcut("AdvantageScope (WPILib)", "AdvantageScope", wpilibYear, "AdvantageScope (WPILib)", "advantagescope.png", token);
-                CreateLinuxShortcut("Elastic (WPILib)", "Elastic", wpilibYear, "elastic_dashboard", "elastic.png", token);
+                var installDir = configurationProvider.InstallDirectory;
+                CreateLinuxShortcut("AdvantageScope (WPILib)", $"{installDir}/advantagescope/advantagescope-wpilib", wpilibYear, "AdvantageScope (WPILib)", "advantagescope.png", token);
+                CreateLinuxShortcut("Elastic (WPILib)", $"{installDir}/elastic/elastic_dashboard", wpilibYear, "elastic_dashboard", "elastic.png", token);
                 CreateLinuxShortcut("Glass", "glass", wpilibYear, "Glass - DISCONNECTED", "glass.png", token);
                 CreateLinuxShortcut("OutlineViewer", "outlineviewer", wpilibYear, "OutlineViewer - DISCONNECTED", "outlineviewer.png", token);
                 CreateLinuxShortcut("DataLogTool", "datalogtool", wpilibYear, "Datalog Tool", "datalogtool.png", token);

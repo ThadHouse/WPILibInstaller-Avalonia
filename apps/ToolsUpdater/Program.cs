@@ -134,7 +134,7 @@ foreach (var tool in tools)
     {
         installTasks.Add(InstallAdvantageScope(toolsPath));
     }
-    else if (tool.Name == "CMake")
+    else if (tool.Name == "Elastic")
     {
         installTasks.Add(InstallElastic(toolsPath));
     }
