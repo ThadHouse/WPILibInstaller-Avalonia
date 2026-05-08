@@ -630,6 +630,12 @@ StartupWMClass={wmClass}
             var extractor = archive;
 
             double totalSize = extractor.TotalUncompressSize;
+            // Workaround for https://github.com/wpilibsuite/WPILibInstaller-Avalonia/issues/632
+            // Works as long as archive is > 2 GB and < 6 GB uncompressed
+            if (OperatingSystem.IsLinux() && totalSize < (long)2 * 1024 * 1024 * 1024)
+            {
+                totalSize += (long)4 * 1024 * 1024 * 1024;
+            }
             long currentSize = 0;
 
             string intoPath = configurationProvider.InstallDirectory;
