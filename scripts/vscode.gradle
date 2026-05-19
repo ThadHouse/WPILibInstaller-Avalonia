@@ -224,16 +224,20 @@ def vscodeTask = tasks.register('vscodeConfig', Task) {
     config['VsCodeWindowsUrl'] = vscodeWindowsUrl
     config['VsCodeWindowsName'] = vscodeWindowsZipName
     config['VsCodeWindowsHash'] = vscodeWindowsHash
+    config['VsCodeWindowsSize'] = vscodeWindowsDownload.get().outputFiles.first().length()
     config['VsCodeMacUrl'] = vscodeMacUrl
     config['VsCodeMacName'] = vscodeMacZipName
     config['VsCodeMacHash'] = vscodeMacHash
+    config['VsCodeMacSize'] = vscodeMacDownload.get().outputFiles.first().length()
     config['VsCodeLinuxUrl'] = vscodeLinuxUrl
     config['VsCodeLinuxName'] = vscodeLinuxZipName
     config['VsCodeLinuxHash'] = vscodeLinuxHash
+    config['VsCodeLinuxSize'] = vscodeLinuxDownload.get().outputFiles.first().length()
 
     config['VsCodeLinuxArm64Url'] = vscodeLinuxArm64Url
     config['VsCodeLinuxArm64Name'] = vscodeLinuxArm64ZipName
     config['VsCodeLinuxArm64Hash'] = vscodeLinuxArm64Hash
+    config['VsCodeLinuxArm64Size'] = vscodeLinuxArm64Download.get().outputFiles.first().length()
 
     config['VsCodeVersion'] = vsCodeVersion
 

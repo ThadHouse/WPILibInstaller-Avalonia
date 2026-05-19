@@ -19,18 +19,24 @@ namespace WPILibInstaller.Models
         public string VsCodeWindowsUrl { get; set; }
         public string VsCodeWindowsName { get; set; }
         public string VsCodeWindowsHash { get; set; }
+        public long VsCodeWindowsSize { get; set; }
 
         public string VsCodeMacUrl { get; set; }
         public string VsCodeMacName { get; set; }
         public string VsCodeMacHash { get; set; }
+        public long VsCodeMacSize { get; set; }
+
 
         public string VsCodeLinuxUrl { get; set; }
         public string VsCodeLinuxName { get; set; }
         public string VsCodeLinuxHash { get; set; }
+        public long VsCodeLinuxSize { get; set; }
+
 
         public string VsCodeLinuxArm64Url { get; set; }
         public string VsCodeLinuxArm64Name { get; set; }
         public string VsCodeLinuxArm64Hash { get; set; }
+        public long VsCodeLinuxArm64Size { get; set; }
 
         public string VsCodeVersion { get; set; }
 

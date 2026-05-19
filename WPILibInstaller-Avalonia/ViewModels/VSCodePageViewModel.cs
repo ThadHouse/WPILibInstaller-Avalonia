@@ -55,9 +55,9 @@ namespace WPILibInstaller.ViewModels
             set => this.SetProperty(ref selectText, value);
         }
 
-        private string singleDownloadText = "Download for this computer only\n(fastest)";
+        private string singleDownloadText = "Download for this computer only\n";
         private string skipVsCodeText = "Skip and don't use VS Code\n(NOT RECOMMENDED)";
-        private string allDownloadText = "Download VS Code archives to share with\nother computers/OSes for offline\ninstall";
+        private string allDownloadText = "Download VS Code archives to share with\nother computers/OSes for offline install\n";
         private string selectText = "Select existing VS Code archive for\noffline install on this computer";
 
         public double ProgressBar1
@@ -141,6 +141,18 @@ namespace WPILibInstaller.ViewModels
                 SetLocalForwardVisible(true);
                 Model.AlreadyInstalled = true;
             }
+            SingleDownloadText += $" (Download Size: {Model.Platforms[PlatformUtils.CurrentPlatform].Size / 1024 / 1024} MB)";
+            long allDownloadSize = 0;
+            foreach (var platform in Model.Platforms)
+            {
+                // Don't include macOS Intel in the total download size since it's the universal file and is the same file as macOS Arm.
+                if (platform.Key == Platform.Mac64)
+                {
+                    continue;
+                }
+                allDownloadSize += platform.Value.Size;
+            }
+            AllDownloadText += $" (Download Size: {allDownloadSize / 1024 / 1024} MB)";
         }
 
         [RelayCommand]
