@@ -1,4 +1,4 @@
-namespace WPILibInstaller.CLI
+﻿namespace WPILibInstaller.CLI
 {
     internal static class Program
     {

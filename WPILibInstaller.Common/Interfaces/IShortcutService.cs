@@ -1,4 +1,4 @@
-namespace WPILibInstaller.Interfaces
+﻿namespace WPILibInstaller.Interfaces
 {
     public interface IShortcutService
     {

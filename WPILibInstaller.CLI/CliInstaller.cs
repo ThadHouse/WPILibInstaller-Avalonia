@@ -1,4 +1,4 @@
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;

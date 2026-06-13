@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
 
