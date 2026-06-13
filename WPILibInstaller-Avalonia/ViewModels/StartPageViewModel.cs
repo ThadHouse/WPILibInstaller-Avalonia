@@ -366,19 +366,29 @@ namespace WPILibInstaller.ViewModels
         {
             get
             {
-                var publicFolder = Environment.GetEnvironmentVariable("PUBLIC");
-                if (publicFolder == null)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    var publicFolder = Environment.GetEnvironmentVariable("PUBLIC");
+                    if (string.IsNullOrWhiteSpace(publicFolder))
                     {
                         publicFolder = "C:\\Users\\Public";
                     }
-                    else
+
+                    return Path.Combine(publicFolder, "wpilib", UpgradeConfig.WpilibYear);
+                }
+
+                var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var installRoot = Path.Combine(userFolder, ".wpilib");
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    var xdgDataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+                    if (!string.IsNullOrWhiteSpace(xdgDataHome))
                     {
-                        publicFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                        installRoot = Path.Combine(xdgDataHome, ".wpilib");
                     }
                 }
-                return Path.Combine(publicFolder, "wpilib", UpgradeConfig.WpilibYear);
+
+                return Path.Combine(installRoot, UpgradeConfig.WpilibYear);
             }
         }
 
