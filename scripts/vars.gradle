@@ -3,7 +3,7 @@ def varsfilePS = file("files/wpilibvars.ps1")
 def varsfilesh = file("files/wpilibvars.sh")
 def codefile = file("files/wpilibcode")
 def codefileCmd = file("files/wpilibcode.cmd")
-def icoFile = file("WPILibInstaller-Avalonia/Assets/wpilib-256.ico")
+def icoFile = file("WPILibInstaller.GUI/Assets/wpilib-256.ico")
 def codeAppArmorFile = file("files/wpilibcode.AppArmor")
 def advantagescopeAppArmorFile = file("files/advantagescope.AppArmor")
 

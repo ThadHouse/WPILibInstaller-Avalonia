@@ -31,7 +31,9 @@ If no OS argument is given, it will default to building Windows 64. Additionally
 
 This is the organization of the repository directories
 
-- WPILibInstaller-Avalonia (Contains the C# application files for the installer UI, as well as the main installer program)
+- WPILibInstaller.Common (Contains shared installer models, services, utilities, and view models)
+- WPILibInstaller.GUI (Contains the Avalonia installer UI)
+- WPILibInstaller.CLI (Contains the command-line installer)
 - WPILibShortcutCreator (Contains various scripts to handle creating shortcuts on different OSes)
 - apps (Integrates with Gradle into downloading the various WPILib tools and applications needed)
 - files (Miscellaneous script files that are used for VSCode integration, and path handling)

@@ -24,6 +24,6 @@ namespace WPILibInstaller.Utils;
 [JsonSerializable(typeof(ShortcutInfo))]
 [JsonSerializable(typeof(NewEnvVariable))]
 [JsonSerializable(typeof(AddedPathVariable))]
-internal sealed partial class SourceGenerationContext : JsonSerializerContext
+public sealed partial class SourceGenerationContext : JsonSerializerContext
 {
 }

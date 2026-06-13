@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>WPILibInstaller-CLI</AssemblyName>
+    <RootNamespace>WPILibInstaller.CLI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WPILibInstaller.Common\WPILibInstaller.Common.csproj" />
+  </ItemGroup>
+</Project>
