@@ -35,6 +35,13 @@ namespace WPILibInstaller.CLI
             artifactsOption.Aliases.Add("--artifact-file");
             artifactsOption.Aliases.Add("--artifacts-file");
 
+            var vsCodeOption = new Option<string?>("--vscode")
+            {
+                Description = "Predownloaded VS Code archive to install"
+            };
+            vsCodeOption.Aliases.Add("--vscode-archive");
+            vsCodeOption.Aliases.Add("--vs-code-archive");
+
             var forceOption = new Option<bool>("--force")
             {
                 Description = "Skip the confirmation prompt and start installation"
@@ -48,6 +55,7 @@ namespace WPILibInstaller.CLI
                 installModeOption,
                 resourcesOption,
                 artifactsOption,
+                vsCodeOption,
                 forceOption
             };
 
@@ -65,10 +73,11 @@ namespace WPILibInstaller.CLI
                 var installMode = parseResult.GetRequiredValue(installModeOption).ToLowerInvariant();
                 var resourcesFile = parseResult.GetValue(resourcesOption);
                 var artifactsFile = parseResult.GetValue(artifactsOption);
+                var vsCodeArchive = parseResult.GetValue(vsCodeOption);
                 var force = parseResult.GetValue(forceOption);
 
                 await using var installer = new CliInstaller();
-                return await installer.RunInstallAsync(allUsers, installMode, resourcesFile, artifactsFile, force);
+                return await installer.RunInstallAsync(allUsers, installMode, resourcesFile, artifactsFile, vsCodeArchive, force);
             });
 
             var parseResult = rootCommand.Parse(args);

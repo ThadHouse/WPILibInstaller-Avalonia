@@ -35,7 +35,7 @@ namespace WPILibInstaller.CLI
 
         InstallSelectionModel IToInstallProvider.Model => Model;
 
-        public async Task<int> RunInstallAsync(bool allUsers, string installMode = "all", string? resourcesFileArgument = null, string? artifactsFileArgument = null, bool force = false)
+        public async Task<int> RunInstallAsync(bool allUsers, string installMode = "all", string? resourcesFileArgument = null, string? artifactsFileArgument = null, string? vsCodeArchiveArgument = null, bool force = false)
         {
             try
             {
@@ -46,6 +46,20 @@ namespace WPILibInstaller.CLI
                 if (installMode != "all" && installMode != "tools")
                 {
                     Console.Error.WriteLine($"Error: Invalid install mode '{installMode}'. Valid options are 'all' or 'tools'.");
+                    return 1;
+                }
+
+                if (vsCodeArchiveArgument != null && installMode != "all")
+                {
+                    Console.Error.WriteLine("Error: --vscode can only be used with --install-mode all.");
+                    return 1;
+                }
+
+                string? vsCodeArchiveFile = null;
+                if (installMode == "all" &&
+                    !TryNormalizeFileArgument(vsCodeArchiveArgument, "VS Code archive", out vsCodeArchiveFile, out var vsCodeArchiveError))
+                {
+                    Console.Error.WriteLine($"Error: {vsCodeArchiveError}");
                     return 1;
                 }
 
@@ -74,6 +88,10 @@ namespace WPILibInstaller.CLI
 
                 Console.WriteLine($"Installing to: {InstallDirectory}");
                 Console.WriteLine($"Install mode: {installMode}");
+                if (vsCodeArchiveFile != null)
+                {
+                    Console.WriteLine($"VS Code archive: {Path.GetFileName(vsCodeArchiveFile)}");
+                }
                 Console.WriteLine();
 
                 if (!force && !ConfirmInstall())
@@ -86,7 +104,7 @@ namespace WPILibInstaller.CLI
 
                 if (Model.InstallEverything)
                 {
-                    await DownloadAndPrepareVsCodeAsync(cancellation.Token);
+                    await DownloadAndPrepareVsCodeAsync(vsCodeArchiveFile, cancellation.Token);
                 }
 
                 var archiveService = new ArchiveExtractionService(this);
@@ -298,10 +316,17 @@ namespace WPILibInstaller.CLI
                 response.Equals("yes", StringComparison.OrdinalIgnoreCase));
         }
 
-        private async Task DownloadAndPrepareVsCodeAsync(CancellationToken token)
+        private async Task DownloadAndPrepareVsCodeAsync(string? archivePath, CancellationToken token)
         {
             var currentPlatform = PlatformUtils.CurrentPlatform;
             var platformData = VsCodeModel.Platforms[currentPlatform];
+
+            if (archivePath != null)
+            {
+                Console.WriteLine($"Using VS Code archive: {Path.GetFileName(archivePath)}");
+                await LoadOfflineVsCodeArchive(archivePath, currentPlatform, platformData.Sha256Hash.ToArray(), token);
+                return;
+            }
 
             Console.WriteLine("Downloading VS Code...");
 
@@ -321,13 +346,13 @@ namespace WPILibInstaller.CLI
                 Console.WriteLine($"VS Code download failed: {ex.Message}");
                 Console.WriteLine("Checking for offline VS Code archive...");
 
-                if (!TryFindOfflineVsCodeArchive(currentPlatform, out var archivePath))
+                if (!TryFindOfflineVsCodeArchive(currentPlatform, out var discoveredArchivePath))
                 {
                     throw;
                 }
 
-                Console.WriteLine($"Found offline VS Code archive: {Path.GetFileName(archivePath)}");
-                await LoadOfflineVsCodeArchive(archivePath, currentPlatform, platformData.Sha256Hash.ToArray(), token);
+                Console.WriteLine($"Found offline VS Code archive: {Path.GetFileName(discoveredArchivePath)}");
+                await LoadOfflineVsCodeArchive(discoveredArchivePath, currentPlatform, platformData.Sha256Hash.ToArray(), token);
             }
         }
 
