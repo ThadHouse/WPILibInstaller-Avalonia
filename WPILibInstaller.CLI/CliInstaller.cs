@@ -35,7 +35,7 @@ namespace WPILibInstaller.CLI
 
         InstallSelectionModel IToInstallProvider.Model => Model;
 
-        public async Task<int> RunInstallAsync(bool allUsers, string installMode = "all", string? resourcesFileArgument = null, string? artifactsFileArgument = null)
+        public async Task<int> RunInstallAsync(bool allUsers, string installMode = "all", string? resourcesFileArgument = null, string? artifactsFileArgument = null, bool force = false)
         {
             try
             {
@@ -75,6 +75,12 @@ namespace WPILibInstaller.CLI
                 Console.WriteLine($"Installing to: {InstallDirectory}");
                 Console.WriteLine($"Install mode: {installMode}");
                 Console.WriteLine();
+
+                if (!force && !ConfirmInstall())
+                {
+                    Console.WriteLine("Installation cancelled.");
+                    return 2;
+                }
 
                 using CancellationTokenSource cancellation = new();
 
@@ -280,6 +286,16 @@ namespace WPILibInstaller.CLI
         private string ComputeInstallDirectory()
         {
             return InstallerResources.GetDefaultInstallDirectory(UpgradeConfig);
+        }
+
+        private static bool ConfirmInstall()
+        {
+            Console.Write("This will install WPILib on this computer. Continue? [y/N]: ");
+            var response = Console.ReadLine();
+            response = response?.Trim();
+            return response != null &&
+                (response.Equals("y", StringComparison.OrdinalIgnoreCase) ||
+                response.Equals("yes", StringComparison.OrdinalIgnoreCase));
         }
 
         private async Task DownloadAndPrepareVsCodeAsync(CancellationToken token)

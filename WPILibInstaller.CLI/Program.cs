@@ -35,12 +35,20 @@ namespace WPILibInstaller.CLI
             artifactsOption.Aliases.Add("--artifact-file");
             artifactsOption.Aliases.Add("--artifacts-file");
 
+            var forceOption = new Option<bool>("--force")
+            {
+                Description = "Skip the confirmation prompt and start installation"
+            };
+            forceOption.Aliases.Add("-y");
+            forceOption.Aliases.Add("--yes");
+
             RootCommand rootCommand = new("WPILib Installer - CLI")
             {
                 allUsersOption,
                 installModeOption,
                 resourcesOption,
-                artifactsOption
+                artifactsOption,
+                forceOption
             };
 
             rootCommand.Description = """
@@ -57,9 +65,10 @@ namespace WPILibInstaller.CLI
                 var installMode = parseResult.GetRequiredValue(installModeOption).ToLowerInvariant();
                 var resourcesFile = parseResult.GetValue(resourcesOption);
                 var artifactsFile = parseResult.GetValue(artifactsOption);
+                var force = parseResult.GetValue(forceOption);
 
                 await using var installer = new CliInstaller();
-                return await installer.RunInstallAsync(allUsers, installMode, resourcesFile, artifactsFile);
+                return await installer.RunInstallAsync(allUsers, installMode, resourcesFile, artifactsFile, force);
             });
 
             var parseResult = rootCommand.Parse(args);
