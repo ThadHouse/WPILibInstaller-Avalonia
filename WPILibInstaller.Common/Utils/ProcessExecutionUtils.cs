@@ -28,7 +28,7 @@ namespace WPILibInstaller.Utils
             }
         }
 
-        public static Task<bool> RunJavaJar(string installDir, string jar, int timeoutMs)
+        public static async Task<bool> RunJavaJar(string installDir, string jar, int timeoutMs)
         {
             string java = Path.Join(installDir, "jdk", "bin", "java");
             if (OperatingSystem.IsWindows())
@@ -38,7 +38,23 @@ namespace WPILibInstaller.Utils
 
             ProcessStartInfo startInfo = new(java, $"-jar \"{jar}\"");
             using var process = Process.Start(startInfo);
-            return Task.Run(() => process!.WaitForExit(timeoutMs));
+
+            if (timeoutMs == Timeout.Infinite)
+            {
+                await process!.WaitForExitAsync();
+                return true;
+            }
+
+            using CancellationTokenSource timeoutSource = new(timeoutMs);
+            try
+            {
+                await process!.WaitForExitAsync(timeoutSource.Token);
+                return true;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
         }
 
         public static async Task<bool> RunScriptExecutable(string script, int timeoutMs, CancellationToken token = default, params string[] args)
