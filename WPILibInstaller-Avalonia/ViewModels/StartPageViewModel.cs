@@ -378,7 +378,7 @@ namespace WPILibInstaller.ViewModels
                 }
 
                 var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                var installRoot = Path.Combine(userFolder, ".wpilib");
+                var installRoot = Path.Combine(userFolder, ".local", "share", ".wpilib");
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
                     var xdgDataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
