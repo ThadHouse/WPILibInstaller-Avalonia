@@ -1,48 +1,69 @@
-﻿namespace WPILibInstaller.CLI
+﻿using System.CommandLine;
+
+namespace WPILibInstaller.CLI
 {
     internal static class Program
     {
         public static async Task<int> Main(string[] args)
         {
-            if (args.Contains("--help", StringComparer.Ordinal) || args.Contains("-h", StringComparer.Ordinal))
+            var allUsersOption = new Option<bool>("--all-users")
             {
-                PrintHelp();
-                return 0;
-            }
+                Description = "Create Windows shortcuts with elevation when needed"
+            };
+            allUsersOption.Aliases.Add("-a");
 
-            bool allUsers = args.Contains("--all-users", StringComparer.Ordinal) || args.Contains("-a", StringComparer.Ordinal);
-            string installMode = "all";
-
-            for (int i = 0; i < args.Length; i++)
+            var installModeOption = new Option<string>("--install-mode")
             {
-                if (args[i] == "--install-mode" && i + 1 < args.Length)
-                {
-                    installMode = args[i + 1].ToLowerInvariant();
-                    break;
-                }
-            }
+                Description = "Installation mode: 'all' or 'tools'",
+                DefaultValueFactory = _ => "all"
+            };
+            installModeOption.AcceptOnlyFromAmong("all", "tools");
 
-            await using var installer = new CliInstaller();
-            return await installer.RunInstallAsync(allUsers, installMode);
-        }
+            var resourcesOption = new Option<string?>("--resources")
+            {
+                Description = "Resource ZIP to use instead of auto-detecting",
+                Hidden = true
+            };
+            resourcesOption.Aliases.Add("--resource-file");
+            resourcesOption.Aliases.Add("--resources-file");
 
-        private static void PrintHelp()
-        {
-            Console.WriteLine("WPILib Installer - CLI");
-            Console.WriteLine();
-            Console.WriteLine("Usage:");
-            Console.WriteLine("  WPILibInstaller-CLI [options]");
-            Console.WriteLine();
-            Console.WriteLine("Options:");
-            Console.WriteLine("  -a, --all-users            Create Windows shortcuts with elevation when needed");
-            Console.WriteLine("  --install-mode <mode>      Installation mode: 'all' or 'tools' (default: all)");
-            Console.WriteLine("                             all:   Full installation with VS Code");
-            Console.WriteLine("                             tools: JDK + WPILib tools only");
-            Console.WriteLine("  -h, --help                 Show this help message");
-            Console.WriteLine();
-            Console.WriteLine("Offline VS Code:");
-            Console.WriteLine("  If the VS Code download fails, the CLI checks the installer directory,");
-            Console.WriteLine("  current directory, and macOS installer volume for a matching archive.");
+            var artifactsOption = new Option<string?>("--artifacts")
+            {
+                Description = "Artifacts archive to use instead of auto-detecting",
+                Hidden = true
+            };
+            artifactsOption.Aliases.Add("--artifact-file");
+            artifactsOption.Aliases.Add("--artifacts-file");
+
+            RootCommand rootCommand = new("WPILib Installer - CLI")
+            {
+                allUsersOption,
+                installModeOption,
+                resourcesOption,
+                artifactsOption
+            };
+
+            rootCommand.Description = """
+                Installer files:
+                  Auto-detection uses WPILibInstallerVersion.txt and searches the same bundled installer locations as the GUI.
+
+                Offline VS Code:
+                  If the VS Code download fails, the CLI checks the installer directory, current directory, and macOS installer volume for a matching archive.
+                """;
+
+            rootCommand.SetAction(async parseResult =>
+            {
+                var allUsers = parseResult.GetValue(allUsersOption);
+                var installMode = parseResult.GetRequiredValue(installModeOption).ToLowerInvariant();
+                var resourcesFile = parseResult.GetValue(resourcesOption);
+                var artifactsFile = parseResult.GetValue(artifactsOption);
+
+                await using var installer = new CliInstaller();
+                return await installer.RunInstallAsync(allUsers, installMode, resourcesFile, artifactsFile);
+            });
+
+            var parseResult = rootCommand.Parse(args);
+            return await parseResult.InvokeAsync();
         }
     }
 }

@@ -7,5 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WPILibInstaller.Common\WPILibInstaller.Common.csproj" />
+    <PackageReference Include="System.CommandLine" />
   </ItemGroup>
 </Project>
