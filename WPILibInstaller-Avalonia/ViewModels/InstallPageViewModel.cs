@@ -211,10 +211,64 @@ StartupWMClass={wmClass}
             }
             else
             {
+                CreateLegacyInstallSymlink();
                 Succeeded = true;
             }
 
             await viewModelResolver.ResolveMainWindow().ExecuteGoNext();
+        }
+
+        private void CreateLegacyInstallSymlink()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                return;
+            }
+
+            try
+            {
+                var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                if (string.IsNullOrWhiteSpace(userFolder))
+                {
+                    return;
+                }
+
+                var legacyPath = Path.Combine(userFolder, "wpilib");
+                var installRoot = Path.GetDirectoryName(configurationProvider.InstallDirectory);
+                if (string.IsNullOrWhiteSpace(installRoot))
+                {
+                    return;
+                }
+
+                installRoot = Path.GetFullPath(installRoot);
+                Directory.CreateDirectory(installRoot);
+
+                var legacyInfo = new DirectoryInfo(legacyPath);
+                if (legacyInfo.LinkTarget != null)
+                {
+                    var existingTarget = Path.GetFullPath(legacyInfo.LinkTarget, userFolder);
+                    var comparison = OperatingSystem.IsMacOS() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                    if (string.Equals(
+                        Path.TrimEndingDirectorySeparator(existingTarget),
+                        Path.TrimEndingDirectorySeparator(installRoot),
+                        comparison))
+                    {
+                        return;
+                    }
+
+                    Directory.Delete(legacyPath);
+                }
+                else if (Directory.Exists(legacyPath) || File.Exists(legacyPath))
+                {
+                    return;
+                }
+
+                Directory.CreateSymbolicLink(legacyPath, installRoot);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException)
+            {
+                // Leave existing user data alone if the compatibility link cannot be created.
+            }
         }
 
         public override PageViewModelBase MoveNext()
