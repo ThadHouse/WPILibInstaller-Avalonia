@@ -6,7 +6,7 @@
              x:Class="WPILibInstaller.Views.FinalPage"
              xmlns:vm="using:WPILibInstaller.ViewModels"
              x:DataType="vm:FinalPageViewModel">
-  <StackPanel VerticalAlignment="Center">
+  <StackPanel VerticalAlignment="Center" Spacing="5">
     <TextBlock FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center">
       Finished installing! Press finish to exit.
     </TextBlock>
