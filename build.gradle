@@ -359,6 +359,7 @@ def copyInstallerFiles = tasks.register('copyInstallerFiles', Copy) {
     if (!project.hasProperty("macBuild") && !project.hasProperty("macBuildArm")) {
         from(installDirectory) {
             exclude('WPILibInstaller', 'WPILibInstaller.app')
+            exclude('**/*.pdb') // Exclude all PDBs
             filePermissions { unix(0644) }
         }
         from(installDirectory) {
