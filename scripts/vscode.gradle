@@ -213,6 +213,7 @@ def vscodeTask = tasks.register('vscodeConfig', Task) {
   dependsOn verifyVscodeLinuxArm64Download
   dependsOn verifyVscodeWindowsDownload
   dependsOn verifyVscodeMacDownload
+  dependsOn verifyVscodeWindowsArm64Download
 
   inputs.files wpilibExtensionDownload.get().outputFiles
   inputs.files cppDownloadTask.get().outputFiles

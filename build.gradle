@@ -45,7 +45,7 @@ println pubVersion
 def os_arch = System.getProperty("os.arch")
 
 if (os_arch == 'amd64') {
-    os_arch = 'x86_64'
+    os_arch = 'x86-64'
 } else if (os_arch == 'aarch64' || os_arch == 'arm64') {
     os_arch = 'arm64'
 }

@@ -25,7 +25,7 @@ jobs:
             build-options: ""
           - os: windows-11-arm
             artifact-name: WinArm64
-            build-options: "-PwindowsBuildArm"
+            build-options: "-PwindowsBuildArm64"
 
     name: "Build - ${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
