@@ -146,9 +146,11 @@ ext.jdkZipSetupWindowsArm64 = { AbstractArchiveTask zip->
   zip.inputs.file jdkConfigFile
 
   zip.from(project.zipTree(downloadWindowsJdkArm64.get().outputFiles.first())) {
-
     eachFile { f->
-      f.path = f.path.replace("jdk-${jdkVersion}/", 'jdk/')
+      if (f.path.startsWith("jdk-")) {
+        def oldPath = f.path
+        f.path = f.path.replaceFirst("jdk-[^/]+/", 'jdk/')
+      }
     }
 
     eachFile { f->
