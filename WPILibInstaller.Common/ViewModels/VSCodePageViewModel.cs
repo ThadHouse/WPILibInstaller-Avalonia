@@ -25,16 +25,16 @@ namespace WPILibInstaller.ViewModels
         public partial bool EnableSelectionButtons { get; set; } = true;
 
         [ObservableProperty]
-        public partial string SingleDownloadText { get; set; } = "Download for this computer only\n";
+        public partial string SingleDownloadText { get; set; } = "Download for this computer only";
 
         [ObservableProperty]
-        public partial string SkipVsCodeText { get; set; } = "Skip and don't use VS Code\n(NOT RECOMMENDED)";
+        public partial string SkipVsCodeText { get; set; } = "Skip and don't use VS Code (NOT RECOMMENDED)";
 
         [ObservableProperty]
-        public partial string AllDownloadText { get; set; } = "Download VS Code archives to share with\nother computers/OSes for offline install\n";
+        public partial string AllDownloadText { get; set; } = "Download VS Code archives to share with other computers/OSes for offline install";
 
         [ObservableProperty]
-        public partial string SelectText { get; set; } = "Select existing VS Code archive for\noffline install on this computer";
+        public partial string SelectText { get; set; } = "Select existing VS Code archive for offline install on this computer";
 
         [ObservableProperty]
         public partial double ProgressBar1 { get; set; }

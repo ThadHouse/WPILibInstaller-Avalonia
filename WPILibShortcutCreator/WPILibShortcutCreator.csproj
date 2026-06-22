@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>WPILibShortcutCreator</AssemblyName>
+    <RootNamespace>WPILibShortcutCreator</RootNamespace>
+    <ApplicationIcon>..\WPILibInstaller.GUI\Assets\wpilib-256.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DirectPInvoke Include="ole32" />
+    <ProjectReference Include="..\WPILibInstaller.Common\WPILibInstaller.Common.csproj" />
+  </ItemGroup>
+</Project>
