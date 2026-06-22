@@ -6,17 +6,16 @@ namespace WPILibInstaller.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject, IMainWindowViewModel
     {
-        private PageViewModelBase currentPage;
         public PageViewModelBase CurrentPage
         {
-            get => currentPage;
+            get;
             set
             {
                 pages.Push(value);
-                this.SetProperty(ref currentPage, value);
+                this.SetProperty(ref field, value);
                 RefreshForwardBackProperties();
             }
-        }
+        } = null!;
 
         private readonly Stack<PageViewModelBase> pages = new();
 
