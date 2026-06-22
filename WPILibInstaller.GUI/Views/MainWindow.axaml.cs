@@ -1,8 +1,10 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using WPILibInstaller.Interfaces;
+using WPILibInstaller.Services;
 using WPILibInstaller.ViewModels;
 
 namespace WPILibInstaller.Views
@@ -38,12 +40,22 @@ namespace WPILibInstaller.Views
             services.AddSingleton<IConfigurationProvider>(sp => sp.GetRequiredService<StartPageViewModel>());
             services.AddSingleton<IToInstallProvider>(sp => sp.GetRequiredService<ConfigurationPageViewModel>());
             services.AddSingleton<IVsCodeInstallLocationProvider>(sp => sp.GetRequiredService<VSCodePageViewModel>());
+            services.AddSingleton<IArchiveExtractionService, ArchiveExtractionService>();
+            services.AddSingleton<IToolInstallationService, ToolInstallationService>();
+            services.AddSingleton<IVsCodeInstallationService, VsCodeInstallationService>();
+            services.AddSingleton<IShortcutService, ShortcutService>();
 
             ServiceProvider = services.BuildServiceProvider();
 
             InitializeComponent();
 
             viewModel = ServiceProvider.GetRequiredService<MainWindowViewModel>();
+            Dispatcher.UIThread.UnhandledException += (s, e) =>
+            {
+                Console.WriteLine("UI thread unhandled exception: " + e.Exception);
+                viewModel.HandleException(e.Exception);
+                e.Handled = true;
+            };
             DataContext = viewModel;
             viewModel.Initialize();
         }

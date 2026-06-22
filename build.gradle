@@ -308,7 +308,7 @@ def generateFullResourcesTask = tasks.register('generateFullResources', project.
 
 // Creates the main installer application.
 def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
-    workingDir = "$projectDir/WPILibInstaller-Avalonia"
+    workingDir = "$projectDir/WPILibInstaller.GUI"
 
     def macRuntimeId = "osx-x64"
     if (project.hasProperty("macBuildArm")) {
@@ -323,6 +323,14 @@ def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
         commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
                  "/p:Version=$pubVersion"
     }
+}
+
+// Creates the command-line installer application.
+def dotnetCliTask = tasks.register('createCliInstaller', Exec) {
+    workingDir = "$projectDir/WPILibInstaller.CLI"
+
+    commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
+            "/p:Version=$pubVersion"
 }
 
 // Creates the WPILib version file.
@@ -343,8 +351,10 @@ def dotnetVersion = installerProj.PropertyGroup.TargetFramework.text()
 println "Using .NET version: $dotnetVersion"
 
 // Copies the main application to build/outputs.
-def installDirectory = "$projectDir/WPILibInstaller-Avalonia/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
-def macIcon = "$projectDir/WPILibInstaller-Avalonia/wpilib.icns"
+def installDirectory = "$projectDir/WPILibInstaller.GUI/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
+def cliInstallDirectory = "$projectDir/WPILibInstaller.CLI/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
+def cliExecutable = dotnetRuntime.startsWith('win') ? 'WPILibInstaller-CLI.exe' : 'WPILibInstaller-CLI'
+def macIcon = "$projectDir/WPILibInstaller.GUI/wpilib.icns"
 def copyInstallerFiles = tasks.register('copyInstallerFiles', Copy) {
     if (!project.hasProperty("macBuild") && !project.hasProperty("macBuildArm")) {
         from(installDirectory) {
@@ -363,8 +373,11 @@ def copyInstallerFiles = tasks.register('copyInstallerFiles', Copy) {
         into("WPILibInstaller.app/Contents/Resources") { with copySpec { from file(macIcon) } }
     }
 
+    from(cliInstallDirectory) { include cliExecutable }
+
     into "$buildDir/outputs"
     dependsOn dotnetInstallerTask
+    dependsOn dotnetCliTask
     dependsOn versionFileTask
 }
 
@@ -491,6 +504,9 @@ def macCreateImageTask = tasks.register('createMacImage', Task) {
             String identity = project.property("developerID")
             execOperations.exec {
                 commandLine "sh", "-c", "automation/macos_codesign.sh ${identity} $buildDir/outputs/WPILibInstaller.app"
+            }
+            execOperations.exec {
+                commandLine "sh", "-c", "automation/macos_codesign.sh ${identity} $buildDir/outputs/${cliExecutable}"
             }
         }
 

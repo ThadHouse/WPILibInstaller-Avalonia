@@ -1,6 +1,6 @@
 ﻿namespace WPILibInstaller.Utils
 {
-    sealed class HttpClientDownloadWithProgress : IDisposable
+    public sealed class HttpClientDownloadWithProgress : IDisposable
     {
         private readonly string _downloadUrl;
         private readonly Stream _destinationStream;
