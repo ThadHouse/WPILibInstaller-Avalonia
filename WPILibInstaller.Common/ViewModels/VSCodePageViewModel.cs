@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
@@ -20,101 +21,41 @@ namespace WPILibInstaller.ViewModels
             refresher.RefreshForwardBackProperties();
         }
 
-        public bool EnableSelectionButtons
-        {
-            get => enableSelectionButtons;
-            set
-            {
-                this.SetProperty(ref enableSelectionButtons, value);
-            }
-        }
+        [ObservableProperty]
+        public partial bool EnableSelectionButtons { get; set; } = true;
 
-        private bool enableSelectionButtons = true;
+        [ObservableProperty]
+        public partial string SingleDownloadText { get; set; } = "Download for this computer only\n";
 
-        public string SingleDownloadText
-        {
-            get => singleDownloadText;
-            set => this.SetProperty(ref singleDownloadText, value);
-        }
+        [ObservableProperty]
+        public partial string SkipVsCodeText { get; set; } = "Skip and don't use VS Code\n(NOT RECOMMENDED)";
 
-        public string SkipVsCodeText
-        {
-            get => skipVsCodeText;
-            set => this.SetProperty(ref skipVsCodeText, value);
-        }
+        [ObservableProperty]
+        public partial string AllDownloadText { get; set; } = "Download VS Code archives to share with\nother computers/OSes for offline install\n";
 
-        public string AllDownloadText
-        {
-            get => allDownloadText;
-            set => this.SetProperty(ref allDownloadText, value);
-        }
+        [ObservableProperty]
+        public partial string SelectText { get; set; } = "Select existing VS Code archive for\noffline install on this computer";
 
-        public string SelectText
-        {
-            get => selectText;
-            set => this.SetProperty(ref selectText, value);
-        }
+        [ObservableProperty]
+        public partial double ProgressBar1 { get; set; }
 
-        private string singleDownloadText = "Download for this computer only\n";
-        private string skipVsCodeText = "Skip and don't use VS Code\n(NOT RECOMMENDED)";
-        private string allDownloadText = "Download VS Code archives to share with\nother computers/OSes for offline install\n";
-        private string selectText = "Select existing VS Code archive for\noffline install on this computer";
+        [ObservableProperty]
+        public partial bool ProgressBar1Visible { get; set; }
 
-        public double ProgressBar1
-        {
-            get => progressBar1;
-            set => this.SetProperty(ref progressBar1, value);
-        }
+        [ObservableProperty]
+        public partial double ProgressBar2 { get; set; }
 
-        private double progressBar1;
+        [ObservableProperty]
+        public partial bool ProgressBarAllVisible { get; set; }
 
-        public bool ProgressBar1Visible
-        {
-            get => progressBar1Visible;
-            set => this.SetProperty(ref progressBar1Visible, value);
-        }
+        [ObservableProperty]
+        public partial double ProgressBar3 { get; set; }
 
-        private bool progressBar1Visible;
+        [ObservableProperty]
+        public partial double ProgressBar4 { get; set; }
 
-        public double ProgressBar2
-        {
-            get => progressBar2;
-            set => this.SetProperty(ref progressBar2, value);
-        }
-
-        private double progressBar2;
-
-        public bool ProgressBarAllVisible
-        {
-            get => progressBarAllVisible;
-            set => this.SetProperty(ref progressBarAllVisible, value);
-        }
-
-        private bool progressBarAllVisible;
-
-        public double ProgressBar3
-        {
-            get => progressBar3;
-            set => this.SetProperty(ref progressBar3, value);
-        }
-
-        private double progressBar3;
-
-        public double ProgressBar4
-        {
-            get => progressBar4;
-            set => this.SetProperty(ref progressBar4, value);
-        }
-
-        private double progressBar4;
-
-        public string DoneText
-        {
-            get => doneText;
-            set => this.SetProperty(ref doneText, value);
-        }
-
-        private string doneText = "";
+        [ObservableProperty]
+        public partial string DoneText { get; set; } = "";
 
         public VsCodeModel Model { get; }
 
