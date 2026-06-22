@@ -276,13 +276,11 @@ def macIcon = "$projectDir/WPILibInstaller.GUI/wpilib.icns"
 
 def dotnetShortcutCreatorTask = tasks.register('createShortcutCreator', Exec) {
     workingDir = "$projectDir/WPILibShortcutCreator"
+    outputs.upToDateWhen { false }
 
     commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
             "/p:Version=$pubVersion"
 
-    inputs.files fileTree("$projectDir/WPILibShortcutCreator") {
-        include '**/*.cs', '**/*.csproj'
-    }
     outputs.file "$shortcutCreatorInstallDirectory/WPILibShortcutCreator.exe"
 }
 
@@ -327,6 +325,7 @@ def generateFullResourcesTask = tasks.register('generateFullResources', project.
 // Creates the main installer application.
 def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
     workingDir = "$projectDir/WPILibInstaller.GUI"
+    outputs.upToDateWhen { false }
 
     def macRuntimeId = "osx-x64"
     if (project.hasProperty("macBuildArm")) {
@@ -346,6 +345,7 @@ def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
 // Creates the command-line installer application.
 def dotnetCliTask = tasks.register('createCliInstaller', Exec) {
     workingDir = "$projectDir/WPILibInstaller.CLI"
+    outputs.upToDateWhen { false }
 
     commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
             "/p:Version=$pubVersion"
@@ -461,6 +461,7 @@ def windowsCreateImageTask = tasks.register('createWindowsImage', Exec) {
 
     workingDir = "$projectDir/IsoCreator"
     inputs.dir "$buildDir/outputs"
+    outputs.upToDateWhen { false }
 
     def file = "$buildDir/pubOutputs/WPILib_" + buildClassifier + '-' + pubVersion + '.iso'
 
