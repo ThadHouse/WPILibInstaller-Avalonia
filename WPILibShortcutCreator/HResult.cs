@@ -1,4 +1,4 @@
-namespace WPILibShortcutCreator;
+﻿namespace WPILibShortcutCreator;
 
 internal static class HResult
 {
