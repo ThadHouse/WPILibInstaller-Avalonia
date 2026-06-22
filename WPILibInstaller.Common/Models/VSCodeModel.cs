@@ -10,15 +10,15 @@ namespace WPILibInstaller.Models
             public string NameInZip { get; }
             private readonly byte[] hash;
             public ReadOnlySpan<byte> Sha256Hash => hash;
-            private readonly long size;
-            public long Size => size;
+
+            public long Size { get; }
 
             public PlatformData(string downloadUrl, string nameInZip, string sha256Hash, long size)
             {
                 this.DownloadUrl = downloadUrl;
                 this.NameInZip = nameInZip;
                 this.hash = Convert.FromHexString(sha256Hash);
-                this.size = size;
+                Size = size;
             }
         }
 

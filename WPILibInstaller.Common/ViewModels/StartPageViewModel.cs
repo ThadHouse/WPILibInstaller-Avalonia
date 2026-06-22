@@ -16,13 +16,11 @@ namespace WPILibInstaller.ViewModels
 
         public override bool ForwardVisible => forwardVisible;
         private bool forwardVisible;
-        public string VerString => verString;
-
-        private readonly string verString = $"0.0.0";
+        public string VerString { get; } = $"0.0.0";
 
         public void Initialize()
         {
-            var installerFiles = InstallerResources.FindInstallerFiles(verString, AppContext.BaseDirectory);
+            var installerFiles = InstallerResources.FindInstallerFiles(VerString, AppContext.BaseDirectory);
             var selectResources = installerFiles.ResourcesFile == null ? null : SelectResourceFilesWithFile(installerFiles.ResourcesFile);
             var selectSupport = installerFiles.ArtifactsFile == null ? null : SelectSupportFilesWithFile(installerFiles.ArtifactsFile);
 
@@ -70,7 +68,7 @@ namespace WPILibInstaller.ViewModels
             this.viewModelResolver = viewModelResolver;
             refresher = mainRefresher;
 
-            verString = InstallerResources.ReadInstallerVersion(AppContext.BaseDirectory);
+            VerString = InstallerResources.ReadInstallerVersion(AppContext.BaseDirectory);
         }
 
         [ObservableProperty]
