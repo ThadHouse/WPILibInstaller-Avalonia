@@ -9,6 +9,7 @@ namespace WPILibInstaller.Utils
         LinuxArm64,
         Mac64,
         MacArm64,
+        WinArm64,
         Invalid
     }
 
@@ -56,9 +57,13 @@ namespace WPILibInstaller.Utils
                 // we can safely assume that x64 emulation is available and working. This means
                 // everything else (except kernel drivers) can run as x64 ("Win64" in the local
                 // Platform enum).
-                if (currentArch == Architecture.X64 || currentArch == Architecture.Arm64)
+                if (currentArch == Architecture.X64)
                 {
                     CurrentPlatform = Platform.Win64;
+                }
+                else if (currentArch == Architecture.Arm64)
+                {
+                    CurrentPlatform = Platform.WinArm64;
                 }
                 return;
             }

@@ -300,6 +300,7 @@ namespace WPILibInstaller.Services
             switch (currentPlatform)
             {
                 case Platform.Win64:
+                case Platform.WinArm64:
                     portableFolder = Path.Combine(portableFolder, "data");
                     break;
                 case Platform.MacArm64:
@@ -333,6 +334,7 @@ namespace WPILibInstaller.Services
             switch (currentPlatform)
             {
                 case Platform.Win64:
+                case Platform.WinArm64:
                     return Path.Combine(configurationProvider.InstallDirectory, "vscode", "bin", "code.cmd");
                 case Platform.MacArm64:
                 case Platform.Mac64:

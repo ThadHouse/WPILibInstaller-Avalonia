@@ -42,14 +42,24 @@ if (pubVersion == '') {
 
 println pubVersion
 
+def os_arch = System.getProperty("os.arch")
+
+if (os_arch == 'amd64') {
+    os_arch = 'x86_64'
+} else if (os_arch == 'aarch64' || os_arch == 'arm64') {
+    os_arch = 'arm64'
+}
+
 project.ext.setProperty('toolchain-optional-systemCore', '')
 
 if (OperatingSystem.current().isWindows()) {
-    project.ext.currentClassifier = 'windowsx86-64'
+    project.ext.currentClassifier = "windows$os_arch"
 } else if (OperatingSystem.current().isMacOsX()) {
     project.ext.currentClassifier = 'osxuniversal'
+} else if (OperatingSystem.current().isLinux()) {
+    project.ext.currentClassifier = "linux$os_arch"
 } else {
-    project.ext.currentClassifier = 'linuxx86-64'
+    throw new GradleException("Unsupported platform: " + OperatingSystem.current() + " " + os_arch)
 }
 
 if (project.hasProperty('linuxBuild')) {
@@ -92,6 +102,16 @@ if (project.hasProperty('linuxBuild')) {
     project.ext.archiveType = Tar
     project.ext.isUnix = true
     project.ext.dotnetRuntime = 'osx-arm64'
+} else if (project.hasProperty('windowsBuildArm64')) {
+    project.ext.forcePlatform = 'windows'
+    project.ext.forceNativeClassifier = 'windowsarm64'
+    project.ext.forceToolsClassifier = 'winarm64'
+    project.ext.forceCppToolsClassifier = 'windowsarm64'
+    project.ext.buildClassifier = 'WindowsArm64'
+    offlineRepositoryRoot = "$buildDir/dependencies/windows"
+    project.ext.archiveType = Zip
+    project.ext.isUnix = false
+    project.ext.dotnetRuntime = 'win-arm64'
 } else {
     project.ext.forcePlatform = 'windows'
     project.ext.forceNativeClassifier = 'windowsx86-64'

@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 using WPILibInstaller.Models;
@@ -115,6 +116,9 @@ namespace WPILibInstaller.ViewModels
         }
 
         private string doneText = "";
+
+        [ObservableProperty]
+        public partial double ProgressBar5 { get; set; }
 
         public VsCodeModel Model { get; }
 
@@ -263,15 +267,17 @@ namespace WPILibInstaller.ViewModels
             SetLocalForwardVisible(false);
 
             var win64 = DownloadToMemoryStream(Platform.Win64, Model.Platforms[Platform.Win64].DownloadUrl, (d) => ProgressBar1 = d);
-            var linux64 = DownloadToMemoryStream(Platform.Linux64, Model.Platforms[Platform.Linux64].DownloadUrl, (d) => ProgressBar2 = d);
-            var linuxArm64 = DownloadToMemoryStream(Platform.LinuxArm64, Model.Platforms[Platform.LinuxArm64].DownloadUrl, (d) => ProgressBar3 = d);
-            var mac64 = DownloadToMemoryStream(Platform.Mac64, Model.Platforms[Platform.Mac64].DownloadUrl, (d) => ProgressBar4 = d);
+            var winarm64 = DownloadToMemoryStream(Platform.WinArm64, Model.Platforms[Platform.WinArm64].DownloadUrl, (d) => ProgressBar2 = d);
+            var linux64 = DownloadToMemoryStream(Platform.Linux64, Model.Platforms[Platform.Linux64].DownloadUrl, (d) => ProgressBar3 = d);
+            var linuxArm64 = DownloadToMemoryStream(Platform.LinuxArm64, Model.Platforms[Platform.LinuxArm64].DownloadUrl, (d) => ProgressBar4 = d);
+            var mac64 = DownloadToMemoryStream(Platform.Mac64, Model.Platforms[Platform.Mac64].DownloadUrl, (d) => ProgressBar5 = d);
 
-            var results = await Task.WhenAll(win64, linux64, linuxArm64, mac64);
+            var results = await Task.WhenAll(win64, winarm64, linux64, linuxArm64, mac64);
 
             try
             {
                 File.Delete(Path.Join(file, Model.Platforms[Platform.Win64].NameInZip));
+                File.Delete(Path.Join(file, Model.Platforms[Platform.WinArm64].NameInZip));
                 File.Delete(Path.Join(file, Model.Platforms[Platform.Linux64].NameInZip));
                 File.Delete(Path.Join(file, Model.Platforms[Platform.LinuxArm64].NameInZip));
                 File.Delete(Path.Join(file, Model.Platforms[Platform.Mac64].NameInZip));

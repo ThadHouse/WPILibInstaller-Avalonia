@@ -39,6 +39,13 @@ def downloadWindowsJdk = tasks.register('downloadWindowsJdk', Download) {
   overwrite false
 }
 
+def downloadWindowsJdkArm64 = tasks.register('downloadWindowsJdkArm64', Download) {
+  src "https://aka.ms/download-jdk/microsoft-jdk-${jdkWinArmVersion}-windows-aarch64.zip" // TODO get this correct
+  def fileName = file(src.file).name
+  dest "$buildDir/downloads/$fileName"
+  overwrite false
+}
+
 configurations {
   runtimex64
 }
@@ -46,12 +53,14 @@ configurations {
 dependencies {
     if (project.ext.buildClassifier == 'Windows') {
         runtimex64 "org.wpilib.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip"
+    } else if (project.ext.buildClassifier == 'WindowsArm64') {
+        runtimex64 "org.wpilib.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip" // NEEDS TO BE MOVED TO ARM64
     }
 }
 
 def runtimeExtractTask = tasks.register('copyAndExtractRuntime', Copy) {
   into 'build/runtime'
-  if (project.ext.buildClassifier == 'Windows') {
+  if (project.ext.buildClassifier == 'Windows' || project.ext.buildClassifier == 'WindowsArm64') {
     from(project.zipTree(configurations.runtimex64.resolvedConfiguration.resolvedArtifacts.first().file))
   }
 }
@@ -96,6 +105,47 @@ ext.jdkZipSetupWindows = { AbstractArchiveTask zip->
   zip.inputs.file jdkConfigFile
 
   zip.from(project.zipTree(downloadWindowsJdk.get().outputFiles.first())) {
+
+    eachFile { f->
+      f.path = f.path.replace("jdk-${jdkVersion}/", 'jdk/')
+    }
+
+    eachFile { f->
+      file('build/runtime').eachFile {
+        if (f.name.endsWith(it.name)) {
+          f.exclude()
+        }
+      }
+    }
+
+    exclude '**/bin/*.pdb'
+    exclude '**/bin/*.map'
+    exclude '**/bin/server/*.pdb'
+    exclude '**/bin/server/*.map'
+    exclude '**/demo/**'
+
+    includeEmptyDirs = false
+  }
+
+  zip.from (runtimeExtractTask.get()) {
+    into '/jdk/bin'
+  }
+
+  zip.from(jdkConfigFile) {
+    into '/installUtils'
+    rename {'jdkConfig.json'}
+  }
+}
+
+ext.jdkZipSetupWindowsArm64 = { AbstractArchiveTask zip->
+  zip.dependsOn downloadWindowsJdkArm64
+  zip.dependsOn jdkConfigFileTask
+  zip.dependsOn runtimeExtractTask
+
+  zip.inputs.files downloadWindowsJdkArm64.get().outputFiles
+  zip.inputs.file jdkConfigFile
+
+  zip.from(project.zipTree(downloadWindowsJdkArm64.get().outputFiles.first())) {
 
     eachFile { f->
       f.path = f.path.replace("jdk-${jdkVersion}/", 'jdk/')
@@ -251,6 +301,8 @@ ext.jdkZipSetup = { AbstractArchiveTask zip ->
     jdkZipSetupMac(zip)
   } else if (project.hasProperty('macBuildArm')) {
     jdkZipSetupMacArm(zip)
+  } else if (project.hasProperty('windowsBuildArm64')) {
+    jdkZipSetupWindowsArm64(zip)
   } else {
     jdkZipSetupWindows(zip)
   }

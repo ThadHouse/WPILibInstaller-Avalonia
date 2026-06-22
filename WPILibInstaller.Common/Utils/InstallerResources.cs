@@ -157,6 +157,7 @@ public static class InstallerResources
     {
         VsCodeModel model = new(config.VsCodeVersion);
         model.Platforms.Add(Platform.Win64, new VsCodeModel.PlatformData(config.VsCodeWindowsUrl, config.VsCodeWindowsName, config.VsCodeWindowsHash, config.VsCodeWindowsSize));
+        model.Platforms.Add(Platform.WinArm64, new VsCodeModel.PlatformData(config.VsCodeWindowsArm64Url, config.VsCodeWindowsArm64Name, config.VsCodeWindowsArm64Hash, config.VsCodeWindowsArm64Size));
         model.Platforms.Add(Platform.Linux64, new VsCodeModel.PlatformData(config.VsCodeLinuxUrl, config.VsCodeLinuxName, config.VsCodeLinuxHash, config.VsCodeLinuxSize));
         model.Platforms.Add(Platform.LinuxArm64, new VsCodeModel.PlatformData(config.VsCodeLinuxArm64Url, config.VsCodeLinuxArm64Name, config.VsCodeLinuxArm64Hash, config.VsCodeLinuxArm64Size));
         model.Platforms.Add(Platform.Mac64, new VsCodeModel.PlatformData(config.VsCodeMacUrl, config.VsCodeMacName, config.VsCodeMacHash, config.VsCodeMacSize));

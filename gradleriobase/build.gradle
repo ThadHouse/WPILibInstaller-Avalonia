@@ -73,6 +73,8 @@ dependencies {
     implementation "org.wpilib.romiVendordep:romiVendordep-java:${wpi.versions.wpilibVersion.get()}"
     if (project.ext.buildClassifier == 'Windows') {
         implementation "org.wpilib.msvc:runtime:${wpi.versions.wpilibVersion.get()}:x64@zip"
+    } else if (project.ext.buildClassifier == 'WindowsArm64') {
+        implementation "org.wpilib.msvc:runtime:${wpi.versions.wpilibVersion.get()}:arm64@zip"
     }
 }
 

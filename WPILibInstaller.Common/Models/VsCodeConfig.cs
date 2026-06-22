@@ -21,6 +21,11 @@ namespace WPILibInstaller.Models
         public string VsCodeWindowsHash { get; set; }
         public long VsCodeWindowsSize { get; set; }
 
+        public string VsCodeWindowsArm64Url { get; set; }
+        public string VsCodeWindowsArm64Name { get; set; }
+        public string VsCodeWindowsArm64Hash { get; set; }
+        public long VsCodeWindowsArm64Size { get; set; }
+
         public string VsCodeMacUrl { get; set; }
         public string VsCodeMacName { get; set; }
         public string VsCodeMacHash { get; set; }

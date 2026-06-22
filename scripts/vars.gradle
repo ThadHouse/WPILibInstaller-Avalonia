@@ -27,7 +27,7 @@ ext.varsZipSetup = { AbstractArchiveTask zip->
   zip.inputs.file codefileCmd
   zip.inputs.file codeAppArmorFile
 
-  if (project.ext.buildClassifier == 'Windows') {
+  if (project.ext.buildClassifier == 'Windows' || project.ext.buildClassifier == 'WindowsArm64') {
     zip.from (varsfile) {
       into "/$pathfolder"
       rename {

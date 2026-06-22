@@ -39,6 +39,7 @@ We strongly recommend using WPILib's VS Code instead of the system one or a sepa
         <ProgressBar Value="{Binding ProgressBar2}" IsVisible="{Binding ProgressBarAllVisible}" Margin="0,2,0,0" MinWidth="20" />
         <ProgressBar Value="{Binding ProgressBar3}" IsVisible="{Binding ProgressBarAllVisible}" Margin="0,2,0,0" MinWidth="20" />
         <ProgressBar Value="{Binding ProgressBar4}" IsVisible="{Binding ProgressBarAllVisible}" Margin="0,2,0,0" MinWidth="20" />
+        <ProgressBar Value="{Binding ProgressBar5}" IsVisible="{Binding ProgressBarAllVisible}" Margin="0,2,0,0" MinWidth="20" />
       </StackPanel>
     </Grid>
   </Grid>

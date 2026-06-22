@@ -3,6 +3,7 @@ ext.vsCodeVersion = '1.116.0'
 ext.vscodeLinuxHash = 'ce87b613dc65a40304e100fc21a82271b023ef5837700f5797299041030524ba'
 ext.vscodeMacHash = 'df4f20c287dfcf33f5ad49e8dc472c8874bd924ead40e4913c4b9753fe52944b'
 ext.vscodeWindowsHash = '365c3d275deb3a1c0a1aa626f274824b8db15ee150d567a7323b8dbce2cdfa8f'
+ext.vscodeWindowsArm64Hash = 'd1c8e5b9a0c7e4f2a3b1c9e5f8a6b7c9d0e1f2a3b4c5d6e7f8g9h0i1j2k3l4m5n'
 ext.vscodeLinuxArm64Hash = '29047acc3fb79be3a0788092b372e45a8ee40b63b1a85e976b1f014536ba4184'
 
 ext.cppToolsVersion = '1.31.4'
@@ -17,6 +18,7 @@ ext.gccVersion = '12.2.0'
 ext.toolchainGitTag = 'v2025-2'
 
 ext.jdkVersion = '25.0.2+10'
+ext.jdkWinArmVersion = '25.0.3'
 
 ext.advantagescopeGitTag = 'v27.0.0-alpha-4'
 

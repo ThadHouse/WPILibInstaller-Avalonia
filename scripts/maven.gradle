@@ -36,6 +36,8 @@ dependencies {
     documentationJava "org.wpilib.wpilibj:documentation:${project.ext.gradlerioMetadata.wpilibVersion}@zip"
     if (project.ext.buildClassifier == 'Windows') {
         runtimex64 "org.wpilib.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip"
+    } else if (project.ext.buildClassifier == 'WindowsArm64') {
+        runtimex64 "org.wpilib.msvc:runtime:${project.ext.gradlerioMetadata.wpilibVersion}:x64@zip" // NEEDS TO BE MOVED TO ARM64
     }
 }
 
@@ -269,7 +271,7 @@ ext.mavenZipSetup = { AbstractArchiveTask zip->
     into '/tools/artifacts'
   }
 
-  if (project.ext.buildClassifier == 'Windows') {
+  if (project.ext.buildClassifier == 'Windows' || project.ext.buildClassifier == 'WindowsArm64') {
     zip.from(project.zipTree(configurations.runtimex64.resolvedConfiguration.resolvedArtifacts.first().file)) {
       into '/tools'
     }

@@ -6,6 +6,10 @@ def fileNameWindows = "advantagescope-wpilib-win-x64.zip"
 
 def downloadUrlWindows = baseUrl + fileNameWindows
 
+def fileNameWindowsArm64 = "advantagescope-wpilib-win-arm64.zip"
+
+def downloadUrlWindowsArm64 = baseUrl + fileNameWindowsArm64
+
 def fileNameMac = "advantagescope-wpilib-mac-x64.tar.gz"
 
 def downloadUrlMac = baseUrl + fileNameMac
@@ -26,6 +30,13 @@ apply plugin: 'de.undercouch.download'
 
 def downloadTaskWindows = tasks.register('downloadAdvantageScopeWindows', Download) {
   src downloadUrlWindows
+  def fileName = file(src.file).name
+  dest "$buildDir/downloads/$fileName"
+  overwrite true
+}
+
+def downloadTaskWindowsArm64 = tasks.register('downloadAdvantageScopeWindowsArm64', Download) {
+  src downloadUrlWindowsArm64
   def fileName = file(src.file).name
   dest "$buildDir/downloads/$fileName"
   overwrite true
@@ -126,6 +137,15 @@ ext.advantageScopeZipSetup = { AbstractArchiveTask zip->
     // Cannot extract, otherwise breaks mac
     zip.from(downloadTaskMacArm.get().outputFiles.first()) {
       into '/advantagescope'
+    }
+  } else if (project.hasProperty('windowsBuildArm64')) {
+    zip.dependsOn downloadTaskWindowsArm64
+
+    zip.inputs.files downloadTaskWindowsArm64.get().outputFiles
+
+    zip.from(project.zipTree(downloadTaskWindowsArm64.get().outputFiles.first())) {
+      into '/advantagescope'
+      includeEmptyDirs = false
     }
   } else {
     zip.dependsOn downloadTaskWindows
