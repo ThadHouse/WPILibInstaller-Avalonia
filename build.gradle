@@ -15,7 +15,6 @@ buildscript {
 
 plugins {
     id 'java'
-    id 'cpp'
     id "de.undercouch.download" version "5.6.0" apply false
     id "com.gradleup.shadow" version "9.3.0" apply false
 }
@@ -263,6 +262,28 @@ def fullConfigFileTask = tasks.register('generateFullConfigFile', Task) { Task t
     }
 }
 
+def installerProj = new XmlParser().parse("$projectDir/Directory.Build.props")
+
+def dotnetVersion = installerProj.PropertyGroup.TargetFramework.text()
+
+println "Using .NET version: $dotnetVersion"
+
+def installDirectory = "$projectDir/WPILibInstaller.GUI/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
+def cliInstallDirectory = "$projectDir/WPILibInstaller.CLI/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
+def cliExecutable = dotnetRuntime.startsWith('win') ? 'WPILibInstaller-CLI.exe' : 'WPILibInstaller-CLI'
+def shortcutCreatorInstallDirectory = "$projectDir/WPILibShortcutCreator/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
+def macIcon = "$projectDir/WPILibInstaller.GUI/wpilib.icns"
+
+def dotnetShortcutCreatorTask = tasks.register('createShortcutCreator', Exec) {
+    workingDir = "$projectDir/WPILibShortcutCreator"
+    outputs.upToDateWhen { false }
+
+    commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
+            "/p:Version=$pubVersion"
+
+    outputs.file "$shortcutCreatorInstallDirectory/WPILibShortcutCreator.exe"
+}
+
 def generateFullResourcesTask = tasks.register('generateFullResources', project.ext.archiveType) {
     archiveBaseName = 'WPILib_' + buildClassifier + '-' + pubVersion + '-artifacts'
 
@@ -293,15 +314,10 @@ def generateFullResourcesTask = tasks.register('generateFullResources', project.
     elasticZipSetup(it)
 
     if (OperatingSystem.current().isWindows()) {
-        def task = it
-        // Grab release shortcut creator
-        project(':WPILibShortcutCreator').application.binaries.whenElementFinalized { binary ->
-            if (binary.name == 'mainRelease') {
-                task.from(binary.executableFile) {
-                    into '/installUtils'
-                }
-                task.dependsOn binary.executableFileProducer
-            }
+        dependsOn dotnetShortcutCreatorTask
+        from(shortcutCreatorInstallDirectory) {
+            include 'WPILibShortcutCreator.exe'
+            into '/installUtils'
         }
     }
 }
@@ -309,6 +325,7 @@ def generateFullResourcesTask = tasks.register('generateFullResources', project.
 // Creates the main installer application.
 def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
     workingDir = "$projectDir/WPILibInstaller.GUI"
+    outputs.upToDateWhen { false }
 
     def macRuntimeId = "osx-x64"
     if (project.hasProperty("macBuildArm")) {
@@ -328,6 +345,7 @@ def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
 // Creates the command-line installer application.
 def dotnetCliTask = tasks.register('createCliInstaller', Exec) {
     workingDir = "$projectDir/WPILibInstaller.CLI"
+    outputs.upToDateWhen { false }
 
     commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
             "/p:Version=$pubVersion"
@@ -344,17 +362,7 @@ def versionFileTask = tasks.register('writeVersionNumber', Task) {
     }
 }
 
-def installerProj = new XmlParser().parse("$projectDir/Directory.Build.props")
-
-def dotnetVersion = installerProj.PropertyGroup.TargetFramework.text()
-
-println "Using .NET version: $dotnetVersion"
-
 // Copies the main application to build/outputs.
-def installDirectory = "$projectDir/WPILibInstaller.GUI/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
-def cliInstallDirectory = "$projectDir/WPILibInstaller.CLI/bin/Release/$dotnetVersion/$dotnetRuntime/publish"
-def cliExecutable = dotnetRuntime.startsWith('win') ? 'WPILibInstaller-CLI.exe' : 'WPILibInstaller-CLI'
-def macIcon = "$projectDir/WPILibInstaller.GUI/wpilib.icns"
 def copyInstallerFiles = tasks.register('copyInstallerFiles', Copy) {
     if (!project.hasProperty("macBuild") && !project.hasProperty("macBuildArm")) {
         from(installDirectory) {
@@ -453,6 +461,7 @@ def windowsCreateImageTask = tasks.register('createWindowsImage', Exec) {
 
     workingDir = "$projectDir/IsoCreator"
     inputs.dir "$buildDir/outputs"
+    outputs.upToDateWhen { false }
 
     def file = "$buildDir/pubOutputs/WPILib_" + buildClassifier + '-' + pubVersion + '.iso'
 
