@@ -56,7 +56,7 @@ dependencies {
           return
         }
 
-        if (project.hasProperty('macBuildArm') || project.hasProperty('linuxBuildArm64')) {
+        if (project.hasProperty('macBuildArm64') || project.hasProperty('linuxBuildArm64')) {
           skipNewPlatformTools.each { tool->
             if ("$dep.groupId:$dep.artifactId" == tool) {
               def depString = "$dep.groupId:$dep.artifactId:$dep.version:$dep.classifier@$dep.extension"

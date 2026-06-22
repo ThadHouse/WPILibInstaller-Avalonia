@@ -52,7 +52,50 @@ if (OperatingSystem.current().isWindows()) {
     project.ext.currentClassifier = 'linuxx86-64'
 }
 
+def buildFlags = ['linuxBuild', 'linuxBuildArm64', 'macBuild', 'macBuildArm64', 'windowsBuild', 'windowsBuildArm64']
+
+// Ensure either none or one of the build flags is set.
+def setBuildFlags = buildFlags.findAll { project.hasProperty(it) }
+if (setBuildFlags.size() > 1) {
+    throw new GradleException("Multiple build flags set: " + setBuildFlags.join(', '))
+}
+
+if (setBuildFlags.size() == 0) {
+    println "Automatically setting build type"
+    // No property set, we want to set the correct one.
+    def os_arch = System.getProperty("os.arch")
+
+    if (os_arch == 'amd64') {
+        os_arch = 'x86_64'
+    } else if (os_arch == 'aarch64' || os_arch == 'arm64') {
+        os_arch = 'arm64'
+    }
+
+
+    if (OperatingSystem.current().isWindows()) {
+        if (os_arch == 'arm64') {
+            project.ext.windowsBuildArm64 = true
+        } else {
+            project.ext.windowsBuild = true
+        }
+    } else if (OperatingSystem.current().isMacOsX()) {
+        if (os_arch == 'arm64') {
+            project.ext.macBuildArm64 = true
+        } else {
+            project.ext.macBuild = true
+        }
+    } else if (OperatingSystem.current().isLinux()) {
+        if (os_arch == 'arm64') {
+            project.ext.linuxBuildArm64 = true
+        } else {
+            project.ext.linuxBuild = true
+        }
+    }
+
+}
+
 if (project.hasProperty('linuxBuild')) {
+    println "Building for Linux x64"
     project.ext.forcePlatform = 'linuxx86-64'
     project.ext.forceNativeClassifier = 'linuxx86-64'
     project.ext.forceToolsClassifier = 'linuxx64'
@@ -63,6 +106,7 @@ if (project.hasProperty('linuxBuild')) {
     project.ext.isUnix = true
     project.ext.dotnetRuntime = 'linux-x64'
 } else if (project.hasProperty('linuxBuildArm64')) {
+    println "Building for Linux Arm64"
     project.ext.forcePlatform = 'linuxarm64'
     project.ext.forceNativeClassifier = 'linuxarm64'
     project.ext.forceToolsClassifier = 'linuxarm64'
@@ -73,6 +117,7 @@ if (project.hasProperty('linuxBuild')) {
     project.ext.isUnix = true
     project.ext.dotnetRuntime = 'linux-arm64'
 } else if (project.hasProperty('macBuild')) {
+    println "Building for Mac x64"
     project.ext.forcePlatform = 'osx'
     project.ext.forceNativeClassifier = 'osxuniversal'
     project.ext.forceToolsClassifier = 'macx64'
@@ -82,7 +127,8 @@ if (project.hasProperty('linuxBuild')) {
     project.ext.archiveType = Tar
     project.ext.isUnix = true
     project.ext.dotnetRuntime = 'osx-x64'
-} else if (project.hasProperty('macBuildArm')) {
+} else if (project.hasProperty('macBuildArm64')) {
+    println "Building for Mac Arm64"
     project.ext.forcePlatform = 'osx'
     project.ext.forceNativeClassifier = 'osxuniversal'
     project.ext.forceToolsClassifier = 'macarm64'
@@ -92,7 +138,8 @@ if (project.hasProperty('linuxBuild')) {
     project.ext.archiveType = Tar
     project.ext.isUnix = true
     project.ext.dotnetRuntime = 'osx-arm64'
-} else {
+} else if (project.hasProperty('windowsBuild')) {
+    println "Building for Windows x64"
     project.ext.forcePlatform = 'windows'
     project.ext.forceNativeClassifier = 'windowsx86-64'
     project.ext.forceToolsClassifier = 'winx64'
@@ -102,6 +149,8 @@ if (project.hasProperty('linuxBuild')) {
     project.ext.archiveType = Zip
     project.ext.isUnix = false
     project.ext.dotnetRuntime = 'win-x64'
+} else {
+    throw new GradleException("No valid build property set")
 }
 
 public interface GradleRioValueSourceParameters extends ValueSourceParameters {
@@ -311,11 +360,11 @@ def dotnetInstallerTask = tasks.register('createInstaller', Exec) {
     workingDir = "$projectDir/WPILibInstaller.GUI"
 
     def macRuntimeId = "osx-x64"
-    if (project.hasProperty("macBuildArm")) {
+    if (project.hasProperty("macBuildArm64")) {
         macRuntimeId = "osx-arm64"
     }
 
-    if (project.hasProperty("macBuild") || project.hasProperty("macBuildArm")) {
+    if (project.hasProperty("macBuild") || project.hasProperty("macBuildArm64")) {
         commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime,
                 "/p:Version=$pubVersion", "/t:BundleApp", "-p:RuntimeIdentifier=${macRuntimeId}",
                 "-p:CFBundleShortVersionString=$pubVersion", "-p:CFBundleVersion=$pubVersion"
@@ -356,7 +405,7 @@ def cliInstallDirectory = "$projectDir/WPILibInstaller.CLI/bin/Release/$dotnetVe
 def cliExecutable = dotnetRuntime.startsWith('win') ? 'WPILibInstaller-CLI.exe' : 'WPILibInstaller-CLI'
 def macIcon = "$projectDir/WPILibInstaller.GUI/wpilib.icns"
 def copyInstallerFiles = tasks.register('copyInstallerFiles', Copy) {
-    if (!project.hasProperty("macBuild") && !project.hasProperty("macBuildArm")) {
+    if (!project.hasProperty("macBuild") && !project.hasProperty("macBuildArm64")) {
         from(installDirectory) {
             exclude('WPILibInstaller', 'WPILibInstaller.app')
             filePermissions { unix(0644) }
@@ -385,7 +434,7 @@ def copyInstallerFiles = tasks.register('copyInstallerFiles', Copy) {
 def generateConfigFiles = tasks.register('generateCommonResources', Zip) {
     archiveBaseName = 'WPILibInstaller_' + buildClassifier + '-' + pubVersion + '-resources'
 
-    if (!project.hasProperty("macBuild") && !project.hasProperty("macBuildArm")) {
+    if (!project.hasProperty("macBuild") && !project.hasProperty("macBuildArm64")) {
         destinationDirectory = file("$buildDir/outputs")
     } else {
         destinationDirectory = file("$buildDir/outputs/WPILibInstaller.app/Contents/MacOS")
@@ -522,7 +571,7 @@ def macCreateImageTask = tasks.register('createMacImage', Task) {
         // Create disk image.
         println "Creating disk image..."
         def diskArch = "macOS-Intel"
-        if (project.hasProperty('macBuildArm')) {
+        if (project.hasProperty('macBuildArm64')) {
             diskArch = "macOS-Arm64"
         }
         execOperations.exec { commandLine "mkdir", "-p", "$buildDir/pubOutputs" }
@@ -540,7 +589,7 @@ def macCreateImageTask = tasks.register('createMacImage', Task) {
 tasks.register('generateInstallers', Task) {
     if (OperatingSystem.current().isWindows()) {
         dependsOn windowsCreateImageTask
-    } else if (project.hasProperty("macBuild") || project.hasProperty("macBuildArm")) {
+    } else if (project.hasProperty("macBuild") || project.hasProperty("macBuildArm64")) {
         dependsOn macCreateImageTask
     } else {
         dependsOn linuxCreateImageTask

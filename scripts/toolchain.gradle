@@ -107,7 +107,7 @@ ext.toolchainZipSetup = { AbstractArchiveTask zip->
 
       includeEmptyDirs = false
     }
-  } else if (project.hasProperty('macBuildArm')) {
+  } else if (project.hasProperty('macBuildArm64')) {
     zip.dependsOn downloadTaskMacArm
 
     zip.inputs.files downloadTaskMacArm.get().outputFiles

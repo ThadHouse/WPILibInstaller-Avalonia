@@ -19,10 +19,10 @@ jobs:
             build-options: "-PmacBuild"
           - os: macos-latest
             artifact-name: macOSArm
-            build-options: "-PmacBuildArm"
+            build-options: "-PmacBuildArm64"
           - os: windows-latest
             artifact-name: Win64
-            build-options: ""
+            build-options: "-PwindowsBuild"
 
     name: "Build - ${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}

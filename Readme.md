@@ -22,7 +22,7 @@ gradlew generateInstallers -PXmx3072m -PlinuxBuild -PjenkinsBuild
 - ``-PlinuxBuild``
 - ``-PlinuxBuildArm64``
 - ``-PmacBuild``
-- ``-PmacBuildArm``
+- ``-PmacBuildArm64``
 - ``-PwindowsBuild``
 
 If no OS argument is given, it will default to building Windows 64. Additionally, the other gradle options ensure that the build has enough RAM to build properly. It's not recommended to build the installer if your system has less than 4GB of RAM.

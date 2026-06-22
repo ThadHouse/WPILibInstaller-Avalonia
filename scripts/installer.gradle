@@ -19,7 +19,7 @@ def toolsUpdaterTask = tasks.register('toolsUpdater', Exec) {
 
   commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime, "/p:Version=$pubVersion", "-o", toolsUpdaterOutputDir
 
-  def okToSign = project.hasProperty("developerID") && (project.hasProperty('macBuild') || project.hasProperty('macBuildArm'))
+  def okToSign = project.hasProperty("developerID") && (project.hasProperty('macBuild') || project.hasProperty('macBuildArm64'))
 
   doLast {
     // We can sign the app because we have a Developer ID.

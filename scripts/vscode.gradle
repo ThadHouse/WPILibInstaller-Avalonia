@@ -167,7 +167,7 @@ if (project.hasProperty('linuxBuild')) {
   cppDownloadTask = cppLinuxArm64ExtensionDownload
 } else if (project.hasProperty('macBuild')) {
   cppDownloadTask = cppMacExtensionDownload
-} else if (project.hasProperty('macBuildArm')) {
+} else if (project.hasProperty('macBuildArm64')) {
   cppDownloadTask = cppMacArmExtensionDownload
 } else {
   cppDownloadTask = cppExtensionDownload

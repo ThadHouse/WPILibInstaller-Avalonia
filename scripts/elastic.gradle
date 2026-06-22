@@ -97,7 +97,7 @@ ext.elasticZipSetup = { AbstractArchiveTask zip->
     zip.from(downloadTaskMac.get().outputFiles.first()) {
       into '/elastic'
     }
-  } else if (project.hasProperty('macBuildArm')) {
+  } else if (project.hasProperty('macBuildArm64')) {
     zip.dependsOn downloadTaskMacArm
 
     zip.inputs.files downloadTaskMacArm.get().outputFiles
@@ -117,4 +117,3 @@ ext.elasticZipSetup = { AbstractArchiveTask zip->
     }
   }
 }
-
