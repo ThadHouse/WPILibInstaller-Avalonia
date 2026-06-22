@@ -1,4 +1,6 @@
 ﻿using Avalonia;
+using Avalonia.Media;
+using Avalonia.Rendering.Composition;
 using WPILibInstaller.Fonts;
 
 namespace WPILibInstaller
@@ -19,6 +21,14 @@ namespace WPILibInstaller
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFontCollection(new RobotoFontCollection());
+                })
+                .With(new FontManagerOptions
+                {
+                    DefaultFamilyName = "avares://CommonUI/Assets/Fonts#Roboto"
+                })
+                .With(new CompositionOptions()
+                {
+                    UseRegionDirtyRectClipping = false
                 })
                 .LogToTrace();
         }

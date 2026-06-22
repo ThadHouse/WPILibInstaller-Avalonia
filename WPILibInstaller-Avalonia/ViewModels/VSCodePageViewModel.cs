@@ -55,10 +55,10 @@ namespace WPILibInstaller.ViewModels
             set => this.SetProperty(ref selectText, value);
         }
 
-        private string singleDownloadText = "Download for this computer only\n";
-        private string skipVsCodeText = "Skip and don't use VS Code\n(NOT RECOMMENDED)";
-        private string allDownloadText = "Download VS Code archives to share with\nother computers/OSes for offline install\n";
-        private string selectText = "Select existing VS Code archive for\noffline install on this computer";
+        private string singleDownloadText = "Download for this computer only ";
+        private string skipVsCodeText = "Skip and don't use VS Code (NOT RECOMMENDED)";
+        private string allDownloadText = "Download VS Code archives to share with other computers/OSes for offline install";
+        private string selectText = "Select existing VS Code archive for offline install on this computer";
 
         public double ProgressBar1
         {

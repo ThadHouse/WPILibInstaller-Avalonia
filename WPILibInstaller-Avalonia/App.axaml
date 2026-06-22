@@ -1,14 +1,13 @@
 ﻿<Application
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:WPILibInstaller"
-    xmlns:themes="clr-namespace:Avalonia.Themes.Simple;assembly=Avalonia.Themes.Simple"
+    xmlns:themes="using:Avalonia.Themes.Fluent"
     x:Class="WPILibInstaller.App"
     RequestedThemeVariant="Default">
     <Application.Styles>
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="fonts:Roboto#Roboto" />
         </Style>
-        <themes:SimpleTheme />
+        <themes:FluentTheme />
     </Application.Styles>
 </Application>
