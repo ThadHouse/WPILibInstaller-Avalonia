@@ -7,6 +7,7 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="IsoCreator/IsoCreator.csproj" />
+  <Project Path="WPILibShortcutCreator/WPILibShortcutCreator.csproj" />
   <Project Path="WPILibInstaller.CLI/WPILibInstaller.CLI.csproj" />
   <Project Path="WPILibInstaller.Common/WPILibInstaller.Common.csproj" />
   <Project Path="WPILibInstaller.GUI/WPILibInstaller.GUI.csproj" />

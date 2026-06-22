@@ -34,7 +34,7 @@ This is the organization of the repository directories
 - WPILibInstaller.Common (Contains shared installer models, services, utilities, and view models)
 - WPILibInstaller.GUI (Contains the Avalonia installer UI)
 - WPILibInstaller.CLI (Contains the command-line installer)
-- WPILibShortcutCreator (Contains various scripts to handle creating shortcuts on different OSes)
+- WPILibShortcutCreator (NativeAOT C# utility for creating Windows shortcuts)
 - apps (Integrates with Gradle into downloading the various WPILib tools and applications needed)
 - files (Miscellaneous script files that are used for VSCode integration, and path handling)
 - scripts (Core gradle scripts that download required dependencies)
