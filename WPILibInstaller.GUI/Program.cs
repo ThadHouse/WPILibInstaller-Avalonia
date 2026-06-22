@@ -24,7 +24,7 @@ namespace WPILibInstaller
                 })
                 .With(new FontManagerOptions
                 {
-                    DefaultFamilyName = "avares://CommonUI/Assets/Fonts#Roboto"
+                    DefaultFamilyName = "avares://WPILibInstaller/Assets/Fonts#Roboto"
                 })
                 .With(new CompositionOptions()
                 {
