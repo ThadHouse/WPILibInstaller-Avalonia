@@ -1,5 +1,4 @@
-﻿using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WPILibInstaller.Interfaces;
 
@@ -80,12 +79,6 @@ namespace WPILibInstaller.ViewModels
 
             this.viewModelResolver = viewModelResolver;
 
-            Dispatcher.UIThread.UnhandledException += (s, e) =>
-            {
-                Console.WriteLine("UI thread unhandled exception: " + e.Exception);
-                HandleException(e.Exception);
-                e.Handled = true;
-            };
         }
 
         public void Initialize()

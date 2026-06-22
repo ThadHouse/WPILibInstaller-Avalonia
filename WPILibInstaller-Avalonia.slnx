@@ -7,5 +7,7 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="IsoCreator/IsoCreator.csproj" />
-  <Project Path="WPILibInstaller-Avalonia/WPILibInstaller-Avalonia.csproj" />
+  <Project Path="WPILibInstaller.CLI/WPILibInstaller.CLI.csproj" />
+  <Project Path="WPILibInstaller.Common/WPILibInstaller.Common.csproj" />
+  <Project Path="WPILibInstaller.GUI/WPILibInstaller.GUI.csproj" />
 </Solution>
