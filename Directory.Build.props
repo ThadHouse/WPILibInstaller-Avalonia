@@ -2,7 +2,7 @@
   <PropertyGroup>
     <IsAotCompatible>true</IsAotCompatible>
     <TargetFramework>net11.0</TargetFramework>
-    <AppleMinOSVersion Condition="$(RuntimeIdentifier.StartsWith('osx-'))">14.4</AppleMinOSVersion>
+    <AppleMinOSVersion Condition="$(RuntimeIdentifier.StartsWith('osx-'))">15.0</AppleMinOSVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
