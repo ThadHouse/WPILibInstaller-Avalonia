@@ -14,10 +14,10 @@ jobs:
           - os: ubuntu-24.04-arm
             artifact-name: LinuxArm64
             build-options: "-PlinuxBuildArm64"
-          - os: macos-latest
+          - os: blacksmith-6vcpu-macos-26
             artifact-name: macOS
             build-options: "-PmacBuild"
-          - os: macos-latest
+          - os: blacksmith-6vcpu-macos-26
             artifact-name: macOSArm
             build-options: "-PmacBuildArm64"
           - os: windows-latest
