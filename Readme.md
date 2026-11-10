@@ -6,8 +6,10 @@ Welcome to the WPILibInstaller repository, which hosts the source code used to i
 
 ### Required Dependencies
 
-- DotNetCore 10.0 or higher.
+- .NET SDK 11.0 or higher.
 - Java 17
+
+The macOS installer requires macOS 14.4 or later.
 
 ### Building
 
