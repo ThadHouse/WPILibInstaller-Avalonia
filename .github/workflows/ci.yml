@@ -14,10 +14,10 @@ jobs:
           - os: ubuntu-24.04-arm
             artifact-name: LinuxArm64
             build-options: "-PlinuxBuildArm64"
-          - os: blacksmith-6vcpu-macos-26
+          - os: ${{ case(github.repository_owner == 'wpilibsuite', 'blacksmith-6vcpu-macos-26', 'macos-latest') }}
             artifact-name: macOS
             build-options: "-PmacBuild"
-          - os: blacksmith-6vcpu-macos-26
+          - os: ${{ case(github.repository_owner == 'wpilibsuite', 'blacksmith-6vcpu-macos-26', 'macos-latest') }}
             artifact-name: macOSArm
             build-options: "-PmacBuildArm64"
           - os: windows-latest
