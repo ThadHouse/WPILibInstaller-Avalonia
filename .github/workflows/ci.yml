@@ -14,10 +14,10 @@ jobs:
           - os: ubuntu-24.04-arm
             artifact-name: LinuxArm64
             build-options: "-PlinuxBuildArm64"
-          - os: macos-latest
+          - os: ${{ case(github.repository_owner == 'wpilibsuite', 'blacksmith-6vcpu-macos-26', 'macos-latest') }}
             artifact-name: macOS
             build-options: "-PmacBuild"
-          - os: macos-latest
+          - os: ${{ case(github.repository_owner == 'wpilibsuite', 'blacksmith-6vcpu-macos-26', 'macos-latest') }}
             artifact-name: macOSArm
             build-options: "-PmacBuildArm64"
           - os: windows-latest
@@ -45,7 +45,7 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v6
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.x
+          dotnet-version: 11.x
 
       - name: Setup Java (Default)
         uses: actions/setup-java@v5
@@ -154,7 +154,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.x
+          dotnet-version: 11.x
 
       - name: Run dotnet format
         run: dotnet format
