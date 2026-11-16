@@ -1,0 +1,25 @@
+import org.gradle.internal.os.OperatingSystem
+import org.gradle.process.ExecOperations
+
+interface WindowsSigningExecOperationsProvider {
+    @javax.inject.Inject
+    ExecOperations getExecOperations()
+}
+def execOperations = objects.newInstance(WindowsSigningExecOperationsProvider).execOperations
+
+ext.windowsSigningEnabled = project.hasProperty('windowsSign')
+if (windowsSigningEnabled && (!OperatingSystem.current().isWindows() || !dotnetRuntime.startsWith('win-'))) {
+    throw new GradleException('Windows signing requires a Windows host and a Windows build target.')
+}
+
+def signingEnabled = windowsSigningEnabled
+def signingScript = file('automation/windows_codesign.ps1')
+
+ext.windowsCodeSign = { File directory ->
+    if (signingEnabled) {
+        execOperations.exec {
+            commandLine 'pwsh', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+                    '-File', signingScript.absolutePath, '-DirectoryToSign', directory.absolutePath
+        }
+    }
+}

@@ -24,8 +24,31 @@ gradlew generateInstallers -PXmx3072m -PlinuxBuild -PjenkinsBuild
 - ``-PmacBuild``
 - ``-PmacBuildArm64``
 - ``-PwindowsBuild``
+- ``-PwindowsBuildArm64``
 
 If no OS argument is given, it will default to building Windows 64. Additionally, the other gradle options ensure that the build has enough RAM to build properly. It's not recommended to build the installer if your system has less than 4GB of RAM.
+
+### Windows signing
+
+Add `-PwindowsSign` to a Windows build to sign the installer GUI, CLI, shortcut creator,
+ToolsUpdater, and their published DLLs with Azure Trusted Signing before packaging the ISO.
+PowerShell 7 (`pwsh`) and the .NET 8 x64 runtime must be available, including on Arm64
+hosts. The signing script installs the `TrustedSigning` module and verifies each
+signature. Files with valid signatures are preserved.
+
+Set these environment variables when signing locally:
+
+- `AZURE_SIGNING_ENDPOINT`
+- `AZURE_SIGNING_PROFILE_NAME`
+- `AZURE_SIGNING_ACCOUNT_NAME`
+- `AZURE_CLIENT_ID`
+- `AZURE_TENANT_ID`
+- `AZURE_CLIENT_SECRET`
+
+CI enables signing for Windows x64 and Arm64 builds on pushes and manual runs in
+`wpilibsuite`. Configure the corresponding `THAD_AZURE_*` GitHub Actions secrets, using
+the same names as FirstDriverStation. Pull requests and builds without `-PwindowsSign`
+do not invoke signing.
 
 ## Organization of repository
 

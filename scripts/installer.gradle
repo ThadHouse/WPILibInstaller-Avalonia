@@ -15,6 +15,10 @@ def toolsUpdaterOutputDir = file("$buildDir/toolsUpdater")
 
 def toolsUpdaterTask = tasks.register('toolsUpdater', Exec) {
   outputs.dir toolsUpdaterOutputDir
+  inputs.property 'windowsSign', windowsSigningEnabled
+  if (windowsSigningEnabled) {
+    inputs.file file('automation/windows_codesign.ps1')
+  }
   workingDir = "$projectDir/apps/ToolsUpdater"
 
   commandLine 'dotnet', 'publish', '-c', 'Release', '-r', dotnetRuntime, "/p:Version=$pubVersion", "-o", toolsUpdaterOutputDir
@@ -22,6 +26,8 @@ def toolsUpdaterTask = tasks.register('toolsUpdater', Exec) {
   def okToSign = project.hasProperty("developerID") && (project.hasProperty('macBuild') || project.hasProperty('macBuildArm64'))
 
   doLast {
+    windowsCodeSign(toolsUpdaterOutputDir)
+
     // We can sign the app because we have a Developer ID.
     if (okToSign) {
         println "Received a Developer ID -- signing the tools binary..."

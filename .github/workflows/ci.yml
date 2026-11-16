@@ -47,6 +47,18 @@ jobs:
         with:
           dotnet-version: 11.x
 
+      # TrustedSigning uses an x64 SignTool and signing client, including on Arm64 hosts.
+      - name: Install .NET x64 runtime for Windows signing
+        shell: pwsh
+        if: |
+          matrix.artifact-name == 'WinArm64' &&
+          github.repository_owner == 'wpilibsuite' &&
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: |
+          $installScript = Join-Path $env:RUNNER_TEMP 'dotnet-install.ps1'
+          Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile $installScript
+          & $installScript -Channel 8.0 -Runtime dotnet -Architecture x64 -InstallDir "$env:ProgramFiles\dotnet\x64" -NoPath
+
       - name: Setup Java (Default)
         uses: actions/setup-java@v5
         if: (matrix.artifact-name != 'WinArm64')
@@ -93,8 +105,16 @@ jobs:
 
       - name: Build Installer (Main)
         shell: bash
+        env:
+          AZURE_SIGNING_ENDPOINT: ${{ secrets.THAD_AZURE_SIGNING_ENDPOINT }}
+          AZURE_SIGNING_PROFILE_NAME: ${{ secrets.THAD_AZURE_SIGNING_PROFILE_NAME }}
+          AZURE_SIGNING_ACCOUNT_NAME: ${{ secrets.THAD_AZURE_SIGNING_ACCOUNT_NAME }}
+          AZURE_CLIENT_ID: ${{ secrets.THAD_AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.THAD_AZURE_TENANT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.THAD_AZURE_CLIENT_SECRET }}
         run: |
           ./gradlew generateInstallers -PjenkinsBuild ${{ matrix.build-options }} \
+          ${{ runner.os == 'Windows' && github.repository_owner == 'wpilibsuite' && '-PwindowsSign' || '' }} \
           -PdeveloperID=${{ secrets.APPLE_DEVELOPER_ID }} \
           -Pnotarization-username=${{ secrets.APPLE_NOTARIZATION_USERNAME }} \
           -Pnotarization-teamid=${{ secrets.APPLE_NOTARIZATION_TEAMID }} \
